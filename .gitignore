@@ -1,0 +1,24 @@
+# C++ objects and libs
+
+*.slo
+*.lo
+*.o
+*.a
+*.la
+*.lai
+*.so
+*.dll
+*.dylib
+
+# QtCreator
+
+*.autosave
+
+# Documentation
+/doc
+
+# binaries
+/bin
+
+# build temporary files
+/build
