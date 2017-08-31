@@ -31,13 +31,35 @@ git clone https://github.com/lumik/enum_flags.git
 ```
 
 
+### Installation
+
+
+#### Linux or Linux-like terminal (MSYS2, cygwin, ...)
+
+Run this command from the terminal
+```
+make install
+```
+
+If you want to change destination directory, change variable DESTDIR, for example, if you want to place the header file
+to `/opt/include/enum_flags1.0.1/enum_flags.h`, you should invoke
+```
+make DESTDIR=/opt install
+```
+or if you want it to install under the current directory, run
+```
+make DESTDIR=. install
+```
+
+
+
 ### Usage
 
 If you want bitwise operators to work for your enumeration, you have to overload `enableBitmaskOperators()` function
 to return true.
 
 ```cpp
-#include "enum_flags.h"
+#include "enum_flags1.0.1/enum_flags.h"
 
 enum struct TestFlags : unsigned char
 {

@@ -1,8 +1,11 @@
+VERSION = 1.0.1
+
 CXX = g++
 CXXFLAGS = -pipe -fno-keep-inline-dllexport -O2 -std=c++0x -frtti -Wall -Wextra -fexceptions -mthreads
 LIBS = -lgtest
 LINKER = g++
 LFLAGS = -Wl,-s -Wl,-subsystem,console -mthreads
+TESTINC = -I$(CURDIR)/src
 
 detected_OS := $(shell uname -s)
 
@@ -13,38 +16,53 @@ ifeq ($(detected_OS),Linux)
   CXXFLAGS = -pipe -O2 -std=c++0x -frtti -Wall -Wextra -fexceptions -pthread
   LFLAGS = -Wl,-O1 -pthread
 	TARGET = enum_flags_unittest
+	ifeq ($(DESTDIR),)
+		DESTDIR := /usr/local
+	endif
 	MKDIRCMD = mkdir -p
+	CPCMD = cp
 endif
 ifneq (, $(findstring MINGW, $(detected_OS)))
   CXXFLAGS = -pipe -fno-keep-inline-dllexport -O2 -std=c++0x -frtti -Wall -Wextra -fexceptions -mthreads
   LFLAGS = -Wl,-s -Wl,-subsystem,console -mthreads
 	TARGET = enum_flags_unittest.exe
+	ifeq ($(DESTDIR),)
+		DESTDIR := /usr/local
+	endif
 	MKDIRCMD = mkdir -p
+	CPCMD = cp
 endif
 
 HEADERS = src/enum_flags.h
 SOURCES = tests/enum_flags_unittest.cpp
 
-BUILDDIR = build/
-OBJECTS = $(BUILDDIR)enum_flags_unittest.o
+BUILDDIR = build
+OBJECTS = $(BUILDDIR)/enum_flags_unittest.o
 
-DESTDIR        = bin/#avoid trailing-slash linebreak
-DESTDIR_TARGET = $(DESTDIR)$(TARGET)
+TESTDESTDIR        = bin
+TESTDESTDIR_TARGET = $(TESTDESTDIR)/$(TARGET)
+
+INCLUDEDIR = $(DESTDIR)/include/enum_flags$(VERSION)
 
 .PHONY: all
-all: $(DESTDIR_TARGET)
+all: $(TESTDESTDIR_TARGET)
+
+.PHONY: install
+install:
+	$(MKDIRCMD) $(INCLUDEDIR)
+	$(CPCMD) src/enum_flags.h $(INCLUDEDIR)/enum_flags.h
 
 .PHONY: test
-test: $(DESTDIR_TARGET)
-	$(DESTDIR_TARGET)
+test: $(TESTDESTDIR_TARGET)
+	$(TESTDESTDIR_TARGET)
 
-$(DESTDIR_TARGET): $(OBJECTS)
-	$(MKDIRCMD) $(DESTDIR) 
-	$(LINKER) $(LFLAGS) -o $(DESTDIR_TARGET) $(OBJECTS)  $(LIBS)
+$(TESTDESTDIR_TARGET): $(OBJECTS)
+	$(MKDIRCMD) $(TESTDESTDIR) 
+	$(LINKER) $(LFLAGS) -o $(TESTDESTDIR_TARGET) $(OBJECTS) $(LIBS)
  
 $(OBJECTS): $(SOURCES) $(HEADERS)
 	$(MKDIRCMD) build 
-	$(CXX) $(CXXFLAGS) -c -o build/enum_flags_unittest.o tests/enum_flags_unittest.cpp
+	$(CXX) $(CXXFLAGS) -c -o build/enum_flags_unittest.o tests/enum_flags_unittest.cpp $(TESTINC)
 
 .PHONY: check-cpplint
 check-cpplint:

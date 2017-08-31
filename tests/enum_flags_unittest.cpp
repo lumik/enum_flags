@@ -24,7 +24,7 @@
 
 #include "gtest/gtest.h"
 
-#include "../src/enum_flags.h"
+#include "enum_flags.h"
 
 
 namespace {
