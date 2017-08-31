@@ -16,6 +16,6 @@ before_install:
   - cd "${TRAVIS_BUILD_DIR}"
 
 script:
-  - make
+  - make test
   - cd bin && ./enum_flags_unittest
-  - cd .. && python lib/cpplint-1.3.0/cpplint.py --recursive src tests
+  - cd .. && python third_party/cpplint-1.3.0/cpplint.py --recursive src tests

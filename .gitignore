@@ -20,5 +20,8 @@
 # binaries
 /bin
 
+# include
+/include
+
 # build temporary files
 /build
