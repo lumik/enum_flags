@@ -31,10 +31,12 @@ OBJECTS = $(BUILDDIR)enum_flags_unittest.o
 DESTDIR        = bin/#avoid trailing-slash linebreak
 DESTDIR_TARGET = $(DESTDIR)$(TARGET)
 
-
+.PHONY: all
 all: $(DESTDIR_TARGET)
 
+.PHONY: test
 test: $(DESTDIR_TARGET)
+	$(DESTDIR_TARGET)
 
 $(DESTDIR_TARGET): $(OBJECTS)
 	$(MKDIRCMD) $(DESTDIR) 
@@ -43,10 +45,15 @@ $(DESTDIR_TARGET): $(OBJECTS)
 $(OBJECTS): $(SOURCES) $(HEADERS)
 	$(MKDIRCMD) build 
 	$(CXX) $(CXXFLAGS) -c -o build/enum_flags_unittest.o tests/enum_flags_unittest.cpp
+
+.PHONY: check-cpplint
+check-cpplint:
+	python third_party/cpplint-1.3.0/cpplint.py --recursive src tests
 	
-.PHONY: doc clean
+.PHONY: doc
 doc:
 	doxygen 
-    
+
+.PHONY: clean    
 clean:
 	$(RM) build/* 
