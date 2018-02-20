@@ -49,7 +49,7 @@ enum struct TestFlags : unsigned char
 
 
 // this redefinition enables bitwise operator usage
-constexpr bool enableBitmaskOperators(TestFlags) { return true; }
+constexpr bool enable_bitmask_operators(TestFlags) { return true; }
 
 
 // test enumeration without bitwise operators
@@ -67,10 +67,10 @@ enum struct TestEnum : unsigned char
 };
 
 
-// Tests availability of enableBitmaskOperators functions.
-TEST(enum_flags, enableBitmaskOperators) {
-  EXPECT_EQ(true, enableBitmaskOperators(TestFlags()));
-  EXPECT_EQ(false, ::enableBitmaskOperators(TestEnum()));
+// Tests availability of enable_bitmask_operators functions.
+TEST(enum_flags, enable_bitmask_operators) {
+  EXPECT_EQ(true, enable_bitmask_operators(TestFlags()));
+  EXPECT_EQ(false, ::enable_bitmask_operators(TestEnum()));
 }
 
 

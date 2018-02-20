@@ -1,7 +1,7 @@
 /***************************************************************************
 **                                                                        **
 **  Overloades for bitwise operators for scoped enumerations.             **
-**  Copyright (C) 2017 Jakub Klener                                       **
+**  Copyright (C) 2018 Jakub Klener                                       **
 **                                                                        **
 **  This file is part of enum_flags project.                              **
 **                                                                        **
@@ -24,9 +24,9 @@
     \file enum_flags.h
     \brief Templates for bitwise operators are defined in this file.
 
-    If you want bitwise operators to work for your enumeration, you have to overload enableBitmaskOperators() function
-    to return true. The library utilizes _SFINAE_ concept, specifically the fact, that interpretation of bitwise
-    operators fails when enableBitmasOperators() function returns `false` for used datatype.
+    If you want bitwise operators to work for your enumeration, you have to overload enable_bitmask_operators()
+    function to return true. The library utilizes _SFINAE_ concept, specifically the fact, that interpretation of
+    bitwise operators fails when enable_bitmask_operators() function returns `false` for used datatype.
 
     \code
     enum struct TestFlags : unsigned char
@@ -35,7 +35,7 @@
         Two   = 1 << 1,
     };
 
-    constexpr bool enableBitmaskOperators(TestFlags) { return true; }
+    constexpr bool enable_bitmask_operators(TestFlags) { return true; }
 
     int main(int argc, char **argv) {
         TestFlags a, b, c;
@@ -45,7 +45,7 @@
     }
     \endcode
 
-    \sa enableBitmaskOperators()
+    \sa enable_bitmask_operators()
 */
 
 
@@ -70,7 +70,7 @@
         Two   = 1 << 1,
     };
 
-    constexpr bool enableBitmaskOperators(TestFlags) { return true; }
+    constexpr bool enable_bitmask_operators(TestFlags) { return true; }
 
     int main(int argc, char **argv) {
         TestFlags a, b, c;
@@ -81,7 +81,7 @@
     \endcode
  */
 template<typename E>
-constexpr bool enableBitmaskOperators(E) { return false; }
+constexpr bool enable_bitmask_operators(E) { return false; }
 
 
 /*!
@@ -92,7 +92,7 @@ constexpr bool enableBitmaskOperators(E) { return false; }
     \sa operator&(), operator^(), operator~(), operator|=().
  */
 template<typename E>
-inline constexpr typename std::enable_if<enableBitmaskOperators(E()), E>::type
+inline constexpr typename std::enable_if<enable_bitmask_operators(E()), E>::type
     operator|(E a, E b)
 {
     typedef typename std::underlying_type<E>::type underlying;
@@ -108,7 +108,7 @@ inline constexpr typename std::enable_if<enableBitmaskOperators(E()), E>::type
     \sa operator|(), operator^(), operator~(), operator&=().
  */
 template<typename E>
-inline constexpr typename std::enable_if<enableBitmaskOperators(E()), E>::type
+inline constexpr typename std::enable_if<enable_bitmask_operators(E()), E>::type
     operator&(E a, E b)
 {
     typedef typename std::underlying_type<E>::type underlying;
@@ -124,7 +124,7 @@ inline constexpr typename std::enable_if<enableBitmaskOperators(E()), E>::type
     \sa operator|(), operator&(), operator~(), operator^=.
  */
 template<typename E>
-inline constexpr typename std::enable_if<enableBitmaskOperators(E()), E>::type
+inline constexpr typename std::enable_if<enable_bitmask_operators(E()), E>::type
     operator^(E a, E b)
 {
     typedef typename std::underlying_type<E>::type underlying;
@@ -139,7 +139,7 @@ inline constexpr typename std::enable_if<enableBitmaskOperators(E()), E>::type
     \sa operator|(), operator&(), operator^().
  */
 template<typename E>
-inline typename std::enable_if<enableBitmaskOperators(E()), E>::type
+inline typename std::enable_if<enable_bitmask_operators(E()), E>::type
     operator~(E a)
 {
     typedef typename std::underlying_type<E>::type underlying;
@@ -155,7 +155,7 @@ inline typename std::enable_if<enableBitmaskOperators(E()), E>::type
     \sa operator&=(), operator^=, operator|().
  */
 template<typename E>
-inline typename std::enable_if<enableBitmaskOperators(E()), E&>::type
+inline typename std::enable_if<enable_bitmask_operators(E()), E&>::type
     operator|=(E &a, E b)
 {
     typedef typename std::underlying_type<E>::type underlying;
@@ -172,7 +172,7 @@ inline typename std::enable_if<enableBitmaskOperators(E()), E&>::type
     \sa operator|=(), operator^=, operator&().
  */
 template<typename E>
-inline typename std::enable_if<enableBitmaskOperators(E()), E&>::type
+inline typename std::enable_if<enable_bitmask_operators(E()), E&>::type
     operator&=(E &a, E b)
 {
     typedef typename std::underlying_type<E>::type underlying;
@@ -189,7 +189,7 @@ inline typename std::enable_if<enableBitmaskOperators(E()), E&>::type
     \sa operator|=(), operator&=, operator^().
 */
 template<typename E>
-typename std::enable_if<enableBitmaskOperators(E()), E&>::type
+typename std::enable_if<enable_bitmask_operators(E()), E&>::type
     operator^=(E &a, E b)
 {
     typedef typename std::underlying_type<E>::type underlying;

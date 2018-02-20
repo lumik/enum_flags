@@ -55,7 +55,7 @@ make DESTDIR=. install
 
 ### Usage
 
-If you want bitwise operators to work for your enumeration, you have to overload `enableBitmaskOperators()` function
+If you want bitwise operators to work for your enumeration, you have to overload `enable_bitmask_operators()` function
 to return true.
 
 ```cpp
@@ -67,7 +67,7 @@ enum struct TestFlags : unsigned char
     Two   = 1 << 1,
 };
 
-constexpr bool enableBitmaskOperators(TestFlags) { return true; }
+constexpr bool enable_bitmask_operators(TestFlags) { return true; }
 
 int main(int argc, char **argv) {
     TestFlags a, b, c;

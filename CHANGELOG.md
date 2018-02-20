@@ -20,6 +20,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Removed 
 
 
+## [Version 2.0.0 *(2018-02-20)*](https://github.com/lumik/enum_flags/compare/v1.0.1...v2.0.0)
+
+
+### Changed
+
+- enableBitmaskOperators function name was changed to enable_bitmask_operators.
+
+
 ## [Version 1.0.1 *(2017-08-31)*](https://github.com/lumik/enum_flags/compare/v1.0.0...v1.0.1)
 
 
