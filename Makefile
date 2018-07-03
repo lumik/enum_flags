@@ -33,7 +33,7 @@ ifneq (, $(findstring MINGW, $(detected_OS)))
 	CPCMD = cp
 endif
 
-HEADERS = src/enum_flags.h
+HEADERS = src/enum_flags/enum_flags.h
 SOURCES = tests/enum_flags_unittest.cpp
 
 BUILDDIR = build
@@ -50,7 +50,7 @@ all: $(TESTDESTDIR_TARGET)
 .PHONY: install
 install:
 	$(MKDIRCMD) $(INCLUDEDIR)
-	$(CPCMD) src/enum_flags.h $(INCLUDEDIR)/enum_flags.h
+	$(CPCMD) src/enum_flags/enum_flags.h $(INCLUDEDIR)/enum_flags.h
 
 .PHONY: test
 test: $(TESTDESTDIR_TARGET)

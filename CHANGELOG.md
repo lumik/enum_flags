@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
+- Moved enum_flags.h to its own directory.
+
 
 ### Fixed
 

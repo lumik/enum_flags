@@ -49,8 +49,8 @@
 */
 
 
-#ifndef ENUM_FLAGS_H_
-#define ENUM_FLAGS_H_
+#ifndef ENUM_FLAGS_ENUM_FLAGS_H_
+#define ENUM_FLAGS_ENUM_FLAGS_H_
 
 #include<type_traits>
 
@@ -197,4 +197,4 @@ typename std::enable_if<enable_bitmask_operators(E()), E&>::type
     return a;
 }
 
-#endif  // ENUM_FLAGS_H_
+#endif  // ENUM_FLAGS_ENUM_FLAGS_H_
