@@ -10,6 +10,21 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+
+### Changed
+
+
+### Fixed
+
+
+### Removed
+
+
+## [Version 2.1.0](https://github.com/lumik/enum_flags/compare/v2.0.0...v2.1.0)
+
+
+### Added
+
 - Added index documentation page.
 
 
@@ -24,9 +39,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Fixed doxygen warning of not documented parameter.
 - Fixed bad version number in `Makefile` and `README.md`.
-
-
-### Removed
 
 
 ## [Version 2.0.0 *(2018-02-20)*](https://github.com/lumik/enum_flags/compare/v1.0.1...v2.0.0)
