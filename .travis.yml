@@ -2,9 +2,15 @@ sudo: required
 dist: trusty
 language: cpp
 
+# install dependencies
+addons:
+  apt:
+    packages:
+      - libgtest-dev
+      - valgrind
+      - cmake
+
 before_install:
-  - sudo apt-get -qq update
-  - sudo apt-get install -y libgtest-dev valgrind cmake
   - sudo wget https://github.com/google/googletest/archive/release-1.7.0.tar.gz
   - sudo tar xf release-1.7.0.tar.gz
   - cd googletest-release-1.7.0
@@ -18,3 +24,4 @@ before_install:
 script:
   - make test
   - make check-cpplint
+
