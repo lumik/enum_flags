@@ -15,12 +15,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Moved enum_flags.h to its own directory.
 - Changed documentation style to Qt's one.
-- Changed compilation flag for tests to -O3
+- Changed compilation flag for tests to `-O3`.
 
 
 ### Fixed
 
 - Fixed doxygen warning of not documented parameter.
+- Fixed bad version number in `Makefile` and `README.md`.
 
 
 ### Removed 

@@ -1,4 +1,4 @@
-VERSION = 1.0.1
+VERSION = 2.0.0
 
 CXX = g++
 CXXFLAGS = -pipe -fno-keep-inline-dllexport -O2 -std=c++0x -frtti -Wall -Wextra -fexceptions -mthreads
@@ -70,8 +70,8 @@ check-cpplint:
 	
 .PHONY: doc
 doc:
-	doxygen 
+	doxygen
 
-.PHONY: clean    
+.PHONY: clean
 clean:
 	$(RM) build/* 
