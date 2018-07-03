@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+- Added index documentation page.
+
 
 ### Changed
 
@@ -24,7 +26,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Fixed bad version number in `Makefile` and `README.md`.
 
 
-### Removed 
+### Removed
 
 
 ## [Version 2.0.0 *(2018-02-20)*](https://github.com/lumik/enum_flags/compare/v1.0.1...v2.0.0)
