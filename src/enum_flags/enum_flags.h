@@ -1,3 +1,5 @@
+// -*-c++-*-
+
 /***************************************************************************
 **                                                                        **
 **  Overloades for bitwise operators for scoped enumerations.             **
@@ -21,32 +23,39 @@
 
 
 /*!
-    \file enum_flags.h
-    \brief Templates for bitwise operators are defined in this file.
-
-    If you want bitwise operators to work for your enumeration, you have to overload enable_bitmask_operators()
-    function to return true. The library utilizes _SFINAE_ concept, specifically the fact, that interpretation of
-    bitwise operators fails when enable_bitmask_operators() function returns `false` for used datatype.
-
-    \code
-    enum struct TestFlags : unsigned char
-    {
-        One   = 1 << 0,
-        Two   = 1 << 1,
-    };
-
-    constexpr bool enable_bitmask_operators(TestFlags) { return true; }
-
-    int main(int argc, char **argv) {
-        TestFlags a, b, c;
-        a = TestFlags::One;
-        b = TestFlags::Two;
-        c = a | b;
-    }
-    \endcode
-
-    \sa enable_bitmask_operators()
-*/
+ * \file      enum_flags.h
+ * \brief     Templates for bitwise operators are defined in this file.
+ *
+ * \author    Jakub Klener <lumiksro@centrum.cz>
+ * \date      2018-07-03
+ * \copyright Copyright (C) 2018 Jakub Klener. All rights reserved.
+ *
+ * \copyright This project is released under the 3-Clause BSD License. You should have received a copy of the 3-Clause
+ *            BSD License along with this program. If not, see https://opensource.org/licenses/.
+ *
+ * If you want bitwise operators to work for your enumeration, you have to overload enable_bitmask_operators()
+ * function to return true. The library utilizes _SFINAE_ concept, specifically the fact, that interpretation of
+ * bitwise operators fails when enable_bitmask_operators() function returns `false` for used datatype.
+ *
+ * \code
+ * enum struct TestFlags : unsigned char
+ * {
+ *     One   = 1 << 0,
+ *     Two   = 1 << 1,
+ * };
+ *
+ * constexpr bool enable_bitmask_operators(TestFlags) { return true; }
+ *
+ * int main(int argc, char **argv) {
+ *     TestFlags a, b, c;
+ *     a = TestFlags::One;
+ *     b = TestFlags::Two;
+ *     c = a | b;
+ * }
+ * \endcode
+ *
+ * \sa enable_bitmask_operators()
+ */
 
 
 #ifndef ENUM_FLAGS_ENUM_FLAGS_H_
@@ -56,40 +65,40 @@
 
 
 /*!
-    \brief This function template has to be overloaded in order to allow bitwise operators usage for user defined
-    enumeration.
-    \param E dummy parameter for template function resolution.
-    \return true if bitwise operators should be enabled for this enum type.
-
-    If you want bitwise operators to work for your enumeration, you have to overload this function to return true.
-
-    \code
-    enum struct TestFlags : unsigned char
-    {
-        One   = 1 << 0,
-        Two   = 1 << 1,
-    };
-
-    constexpr bool enable_bitmask_operators(TestFlags) { return true; }
-
-    int main(int argc, char **argv) {
-        TestFlags a, b, c;
-        a = TestFlags::One;
-        b = TestFlags::Two;
-        c = a | b;
-    }
-    \endcode
+ * \brief This function template has to be overloaded in order to allow bitwise operators usage for user defined
+ * enumeration.
+ * \return true if bitwise operators should be enabled for this enum type.
+ *
+ * If you want bitwise operators to work for your enumeration, you have to overload this function to return true.
+ * The only parameter is a dummy parameter for template function resolution.
+ *
+ * \code
+ * enum struct TestFlags : unsigned char
+ * {
+ *     One   = 1 << 0,
+ *     Two   = 1 << 1,
+ * };
+ *
+ * constexpr bool enable_bitmask_operators(TestFlags) { return true; }
+ *
+ * int main(int argc, char **argv) {
+ *     TestFlags a, b, c;
+ *     a = TestFlags::One;
+ *     b = TestFlags::Two;
+ *     c = a | b;
+ * }
+ * \endcode
  */
 template<typename E>
 constexpr bool enable_bitmask_operators(E) { return false; }
 
 
 /*!
-    \brief Overloaded bitwise operator|().
-    \param a left operand.
-    \param b right operand.
-    \return resulting value of type `E`.
-    \sa operator&(), operator^(), operator~(), operator|=().
+ * \brief Overloaded bitwise operator|().
+ * \param a left operand.
+ * \param b right operand.
+ * \return resulting value of type `E`.
+ * \sa operator&(), operator^(), operator~(), operator|=().
  */
 template<typename E>
 inline constexpr typename std::enable_if<enable_bitmask_operators(E()), E>::type
@@ -101,11 +110,11 @@ inline constexpr typename std::enable_if<enable_bitmask_operators(E()), E>::type
 
 
 /*!
-    \brief Overloaded bitwise operator&().
-    \param a left operand.
-    \param b right operand.
-    \return resulting value of type `E`.
-    \sa operator|(), operator^(), operator~(), operator&=().
+ * \brief Overloaded bitwise operator&().
+ * \param a left operand.
+ * \param b right operand.
+ * \return resulting value of type `E`.
+ * \sa operator|(), operator^(), operator~(), operator&=().
  */
 template<typename E>
 inline constexpr typename std::enable_if<enable_bitmask_operators(E()), E>::type
@@ -117,11 +126,11 @@ inline constexpr typename std::enable_if<enable_bitmask_operators(E()), E>::type
 
 
 /*!
-    \brief Overloaded bitwise operator^().
-    \param a left operand.
-    \param b right operand.
-    \return resulting value of type `E`.
-    \sa operator|(), operator&(), operator~(), operator^=.
+ * \brief Overloaded bitwise operator^().
+ * \param a left operand.
+ * \param b right operand.
+ * \return resulting value of type `E`.
+ * \sa operator|(), operator&(), operator~(), operator^=.
  */
 template<typename E>
 inline constexpr typename std::enable_if<enable_bitmask_operators(E()), E>::type
@@ -133,10 +142,10 @@ inline constexpr typename std::enable_if<enable_bitmask_operators(E()), E>::type
 
 
 /*!
-    \brief Overloaded bitwise operator~().
-    \param a operand.
-    \return resulting value of type `E`.
-    \sa operator|(), operator&(), operator^().
+ * \brief Overloaded bitwise operator~().
+ * \param a operand.
+ * \return resulting value of type `E`.
+ * \sa operator|(), operator&(), operator^().
  */
 template<typename E>
 inline typename std::enable_if<enable_bitmask_operators(E()), E>::type
@@ -148,11 +157,11 @@ inline typename std::enable_if<enable_bitmask_operators(E()), E>::type
 
 
 /*!
-    \brief Overloaded bitwise operator|=().
-    \param a left operand.
-    \param b right operand.
-    \return resulting value of type `E`.
-    \sa operator&=(), operator^=, operator|().
+ * \brief Overloaded bitwise operator|=().
+ * \param a left operand.
+ * \param b right operand.
+ * \return resulting value of type `E`.
+ * \sa operator&=(), operator^=, operator|().
  */
 template<typename E>
 inline typename std::enable_if<enable_bitmask_operators(E()), E&>::type
@@ -165,11 +174,11 @@ inline typename std::enable_if<enable_bitmask_operators(E()), E&>::type
 
 
 /*!
-    \brief Overloaded bitwise operator&=().
-    \param a left operand.
-    \param b right operand.
-    \return resulting value of type `E`.
-    \sa operator|=(), operator^=, operator&().
+ * \brief Overloaded bitwise operator&=().
+ * \param a left operand.
+ * \param b right operand.
+ * \return resulting value of type `E`.
+ * \sa operator|=(), operator^=, operator&().
  */
 template<typename E>
 inline typename std::enable_if<enable_bitmask_operators(E()), E&>::type
@@ -182,12 +191,12 @@ inline typename std::enable_if<enable_bitmask_operators(E()), E&>::type
 
 
 /*!
-    \brief Overloaded bitwise operator^=().
-    \param a left operand.
-    \param b right operand.
-    \return resulting value of type `E`.
-    \sa operator|=(), operator&=, operator^().
-*/
+ * \brief Overloaded bitwise operator^=().
+ * \param a left operand.
+ * \param b right operand.
+ * \return resulting value of type `E`.
+ * \sa operator|=(), operator&=, operator^().
+ */
 template<typename E>
 typename std::enable_if<enable_bitmask_operators(E()), E&>::type
     operator^=(E &a, E b)

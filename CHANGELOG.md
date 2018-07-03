@@ -14,9 +14,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 - Moved enum_flags.h to its own directory.
+- Changed documentation style to Qt's one.
 
 
 ### Fixed
+
+- Fixed doxygen warning of not documented parameter.
 
 
 ### Removed 
