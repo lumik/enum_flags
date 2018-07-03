@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Moved enum_flags.h to its own directory.
 - Changed documentation style to Qt's one.
+- Changed compilation flag for tests to -O3
 
 
 ### Fixed

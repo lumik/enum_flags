@@ -9,12 +9,12 @@ TESTINC = -I$(CURDIR)/src
 
 detected_OS := $(shell uname -s)
 
-CXXFLAGS = -pipe -O2 -std=c++0x -frtti -Wall -Wextra -fexceptions -pthread
-LFLAGS = -Wl,-O1 -pthread
+CXXFLAGS = -pipe -O3 -std=c++0x -frtti -Wall -Wextra -fexceptions -pthread
+LFLAGS = -Wl,-O3 -pthread
 TARGET = enum_flags_unittest
 ifeq ($(detected_OS),Linux)
-  CXXFLAGS = -pipe -O2 -std=c++0x -frtti -Wall -Wextra -fexceptions -pthread
-  LFLAGS = -Wl,-O1 -pthread
+  CXXFLAGS = -pipe -O3 -std=c++0x -frtti -Wall -Wextra -fexceptions -pthread
+  LFLAGS = -Wl,-O3 -pthread
 	TARGET = enum_flags_unittest
 	ifeq ($(DESTDIR),)
 		DESTDIR := /usr/local
@@ -23,7 +23,7 @@ ifeq ($(detected_OS),Linux)
 	CPCMD = cp
 endif
 ifneq (, $(findstring MINGW, $(detected_OS)))
-  CXXFLAGS = -pipe -fno-keep-inline-dllexport -O2 -std=c++0x -frtti -Wall -Wextra -fexceptions -mthreads
+  CXXFLAGS = -pipe -fno-keep-inline-dllexport -O3 -std=c++0x -frtti -Wall -Wextra -fexceptions -mthreads
   LFLAGS = -Wl,-s -Wl,-subsystem,console -mthreads
 	TARGET = enum_flags_unittest.exe
 	ifeq ($(DESTDIR),)
