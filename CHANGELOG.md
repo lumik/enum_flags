@@ -15,11 +15,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
 ### Fixed
-- Fixed failing Makefile for MinGW installation from Qt.
-- Readme for Windows installation.
 
 
 ### Removed
+
+
+## [Version 2.1.1](https://github.com/lumik/enum_flags/compare/v2.1.0...v2.1.1)
+
+
+### Fixed
+- Fixed failing Makefile for MinGW installation without MSYS2.
+- Readme for Windows installation.
 
 
 ## [Version 2.1.0](https://github.com/lumik/enum_flags/compare/v2.0.0...v2.1.0)
