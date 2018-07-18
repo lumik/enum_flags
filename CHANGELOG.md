@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
 ### Fixed
+- Fixed failing Makefile for MinGW installation from Qt.
+- Readme for Windows installation.
 
 
 ### Removed

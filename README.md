@@ -8,9 +8,10 @@
 * `Doxygen` – for documentation compilation, you can get it from [here][doxygen].
 * `dot` – for graphs in documentation, it is part of the GraphViz library, you can get it from [here][graphviz].
 * `Google Test` suite, you can get it from [here][gtest]
+* `Cmake` – if MSYS2 is not used on windows, you have to install it manualy, you can get it from [here][cmake]
 
 Make sure that the Doxygen and GraphViz binaries are in the `PATH` variable and Google Test suite headers and library
-in your include path for compiler.
+in your include path for compiler. If you installed cmake separately, ensure that it is in path too.
 
 
 ## Getting Started
@@ -52,6 +53,13 @@ make DESTDIR=. install
 ```
 
 
+#### Windows and MinGW
+
+You can also install the library also using mingw32-make but then you have to specify it during make process:
+```
+mingw32-make MINGW=1 DESTDIR=c:\path\to\libraries\home
+```
+
 
 ### Usage
 
@@ -77,6 +85,8 @@ int main(int argc, char **argv) {
 }
 ```
 
+More info can be found in the [documentation](#documentation).
+
 
 ### Compilation of documentation and tests
 
@@ -92,22 +102,41 @@ int main(int argc, char **argv) {
 - download `googletest`, go to directory, where you want to compile `Google Test` and run:
   ```
   git clone --depth=1 https://github.com/google/googletest.git
-  cd googletest/googletest
   ```
 - run Windows cmd, go to downloaded repository and add MinGW binaries to PATH and run cmake
   ```
   set PATH=c:\Programy\msys64\mingw64\bin\;%PATH%
-  cd googletest/googletest
-  mkdir mybuild
-  cd mybuild
+  cd googletest\googletest
+  mkdir build
+  cd build
   cmake -G "MinGW Makefiles" ..
   mingw32-make
   ```
 - in MSYS2 console copy headers and library files to their proper positions:
   ```
   cp -r include/gtest /mingw64/include/
-  cp mybuild/lib*.a /mingw64/lib
+  cp build/lib*.a /mingw64/lib
   ```
+
+
+#### Google test suite instalation in Windows with MinGW (here installation from Qt)
+
+- Make sure that `cmake`, `python` and `git` are installed.
+- download `googletest` using git bash , go to directory, where you want to compile `Google Test` and run:
+  ```
+  git clone --depth=1 https://github.com/google/googletest.git
+  ```
+- run Windows cmd, go to downloaded repository and add MinGW binaries to PATH and run cmake
+  ```
+  set PATH=C:\Programs\Qt\Qt5.4.2\Tools\mingw491_32\bin;%PATH%
+  cd googletest\googletest
+  mkdir build
+  cd build
+  cmake -G "MinGW Makefiles" ..
+  mingw32-make
+  ```
+- copy `include\gtest` directory inside `c:\Programs\Qt\Qt5.4.2\Tools\mingw491_32\i686-w64-mingw32\include\`
+  and `*.a` files from build directory inside `c:\Programs\Qt\Qt5.4.2\Tools\mingw491_32\i686-w64-mingw32\lib\`
 
 
 #### Google test suite instalation in Debian
@@ -115,17 +144,17 @@ int main(int argc, char **argv) {
 - install `gtest` development package and cmake
   ```
   sudo apt install libgtest-dev cmake
-	```
+  ```
 - compile `Google Test` suite:
   ```
-	cd /usr/src/gtest
+  cd /usr/src/gtest
   sudo cmake CMakeLists.txt
   sudo make
   ```
 - copy or symlink libgtest.a and libgtest_main.a to your /usr/local/lib folder
   ```
-	sudo cp *.a /usr/local/lib
-	```
+  sudo cp *.a /usr/local/lib
+  ```
 
 
 #### Command line compilation of documentation and tests
@@ -134,16 +163,28 @@ Run these commands from console from the project root for your OS:
 - Linux 
   ```
   make
+  make test
   make doc
   ```
 - Windows, MSYS2
   ```
   mingw32-make
+  mingw32-make test
   mingw32-make doc
   ```
+- Windows, MinGW withou MSYS2
+  ```
+  mingw32-make MINGW=1
+  mingw32-make MINGW=1 test
+  mingw32-make MINGW=1 doc
+  ```
 
-Tests can be then performed by running binary file from terminal in the bin folder. Documentation can be found in the
-doc folder, html documentation can be opened by the `index.html` file.
+Tests can be also performed by running binary file from terminal in the `bin` folder.
+
+
+## Documentation
+
+Documentation can be found in the `doc` folder, html documentation can be opened by the `index.html` file.
 
 
 [git]: https://git-scm.com/
@@ -151,3 +192,4 @@ doc folder, html documentation can be opened by the `index.html` file.
 [doxygen]: http://www.stack.nl/~dimitri/doxygen/
 [graphviz]: http://graphviz.org/
 [gtest]: https://github.com/google/googletest
+[cmake]: https://cmake.org/download/

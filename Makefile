@@ -7,30 +7,47 @@ LINKER = g++
 LFLAGS = -Wl,-s -Wl,-subsystem,console -mthreads
 TESTINC = -I$(CURDIR)/src
 
-detected_OS := $(shell uname -s)
-
 CXXFLAGS = -pipe -O3 -std=c++0x -frtti -Wall -Wextra -fexceptions -pthread
 LFLAGS = -Wl,-O3 -pthread
 TARGET = enum_flags_unittest
-ifeq ($(detected_OS),Linux)
-  CXXFLAGS = -pipe -O3 -std=c++0x -frtti -Wall -Wextra -fexceptions -pthread
-  LFLAGS = -Wl,-O3 -pthread
-	TARGET = enum_flags_unittest
-	ifeq ($(DESTDIR),)
-		DESTDIR := /usr/local
-	endif
-	MKDIRCMD = mkdir -p
-	CPCMD = cp
-endif
-ifneq (, $(findstring MINGW, $(detected_OS)))
-  CXXFLAGS = -pipe -fno-keep-inline-dllexport -O3 -std=c++0x -frtti -Wall -Wextra -fexceptions -mthreads
-  LFLAGS = -Wl,-s -Wl,-subsystem,console -mthreads
+ifdef MINGW
+	CXXFLAGS = -pipe -fno-keep-inline-dllexport -O3 -std=c++0x -frtti -Wall -Wextra -fexceptions -mthreads
+	LFLAGS = -Wl,-s -Wl,-subsystem,console -mthreads
 	TARGET = enum_flags_unittest.exe
 	ifeq ($(DESTDIR),)
-		DESTDIR := /usr/local
+		DESTDIR := c:
 	endif
-	MKDIRCMD = mkdir -p
-	CPCMD = cp
+	mkdir_cmd = if not exist $(1) mkdir $(1)
+	CPCMD = copy
+	RM = del /Q
+	fix_path = $(subst /,\,$1)
+else
+	detected_OS := $(shell uname -s)
+
+	ifeq ($(detected_OS),Linux)
+		CXXFLAGS = -pipe -O3 -std=c++0x -frtti -Wall -Wextra -fexceptions -pthread
+		LFLAGS = -Wl,-O3 -pthread
+		TARGET = enum_flags_unittest
+		ifeq ($(DESTDIR),)
+			DESTDIR := /usr/local
+		endif
+		mkdir_cmd = mkdir -p $1
+		CPCMD = cp
+		RM = rm -f
+		fix_path = $1
+	endif
+	ifneq (, $(findstring MINGW, $(detected_OS)))
+		CXXFLAGS = -pipe -fno-keep-inline-dllexport -O3 -std=c++0x -frtti -Wall -Wextra -fexceptions -mthreads
+		LFLAGS = -Wl,-s -Wl,-subsystem,console -mthreads
+		TARGET = enum_flags_unittest.exe
+		ifeq ($(DESTDIR),)
+			DESTDIR := /usr/local
+		endif
+		mkdir_cmd = mkdir -p $1
+		CPCMD = cp
+		RM = rm -f
+		fix_path = $1
+	endif
 endif
 
 HEADERS = src/enum_flags/enum_flags.h
@@ -49,19 +66,19 @@ all: $(TESTDESTDIR_TARGET)
 
 .PHONY: install
 install:
-	$(MKDIRCMD) $(INCLUDEDIR)
-	$(CPCMD) src/enum_flags/enum_flags.h $(INCLUDEDIR)/enum_flags.h
+	$(call mkdir_cmd,$(call fix_path,$(INCLUDEDIR)))
+	$(CPCMD) $(call fix_path,src/enum_flags/enum_flags.h) $(call fix_path,$(INCLUDEDIR)/enum_flags.h)
 
 .PHONY: test
 test: $(TESTDESTDIR_TARGET)
-	$(TESTDESTDIR_TARGET)
+	$(call fix_path,$(TESTDESTDIR_TARGET))
 
 $(TESTDESTDIR_TARGET): $(OBJECTS)
-	$(MKDIRCMD) $(TESTDESTDIR) 
+	$(call mkdir_cmd,$(call fix_path,$(TESTDESTDIR)))
 	$(LINKER) $(LFLAGS) -o $(TESTDESTDIR_TARGET) $(OBJECTS) $(LIBS)
  
 $(OBJECTS): $(SOURCES) $(HEADERS)
-	$(MKDIRCMD) build 
+	$(call mkdir_cmd,$(call fix_path,$(BUILDDIR)))
 	$(CXX) $(CXXFLAGS) -c -o build/enum_flags_unittest.o tests/enum_flags_unittest.cpp $(TESTINC)
 
 .PHONY: check-cpplint
