@@ -16,11 +16,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
+- Fixed change log for dates
+- Fixed anchor in readme.
+
 
 ### Removed
 
 
-## [Version 2.1.1](https://github.com/lumik/enum_flags/compare/v2.1.0...v2.1.1)
+## [Version 2.1.1 *(2018-07-18)*](https://github.com/lumik/enum_flags/compare/v2.1.0...v2.1.1)
 
 
 ### Fixed
@@ -28,7 +31,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Readme for Windows installation.
 
 
-## [Version 2.1.0](https://github.com/lumik/enum_flags/compare/v2.0.0...v2.1.0)
+## [Version 2.1.0 *(2018-07-03)*](https://github.com/lumik/enum_flags/compare/v2.0.0...v2.1.0)
 
 
 ### Added

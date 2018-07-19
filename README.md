@@ -1,4 +1,6 @@
-# enum_flags.h – overloades bitwise operators for scoped enumerations.
+# enum_flags
+
+Library which overloades bitwise operators for scoped enumerations.
 
 
 ## Requirements
@@ -182,7 +184,7 @@ Run these commands from console from the project root for your OS:
 Tests can be also performed by running binary file from terminal in the `bin` folder.
 
 
-## Documentation
+## Documentation @anchor documentation
 
 Documentation can be found in the `doc` folder, html documentation can be opened by the `index.html` file.
 
