@@ -45,7 +45,7 @@ make install
 ```
 
 If you want to change destination directory, change variable DESTDIR, for example, if you want to place the header file
-to `/opt/include/enum_flags2.1.1/enum_flags.h`, you should invoke
+to `/opt/include/enum_flags2.1.2/enum_flags.h`, you should invoke
 ```
 make DESTDIR=/opt install
 ```
@@ -69,7 +69,7 @@ If you want bitwise operators to work for your enumeration, you have to overload
 to return true.
 
 ```cpp
-#include "enum_flags2.1.1/enum_flags.h"
+#include "enum_flags2.1.2/enum_flags.h"
 
 enum struct TestFlags : unsigned char
 {

@@ -1,4 +1,4 @@
-VERSION = 2.1.1
+VERSION = 2.1.2
 
 CXX = g++
 CXXFLAGS = -pipe -fno-keep-inline-dllexport -O2 -std=c++0x -frtti -Wall -Wextra -fexceptions -mthreads

@@ -13,6 +13,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
+
+### Fixed
+
+
+### Removed
+
+
+## [Version 2.1.2 *(2018-07-24)*](https://github.com/lumik/enum_flags/compare/v2.1.1...v2.1.2)
+
+
+### Changed
+
 - Moved to Ubuntu 18.04 in automated tests.
 
 
@@ -20,9 +32,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Fixed change log for dates
 - Fixed anchor in readme.
-
-
-### Removed
 
 
 ## [Version 2.1.1 *(2018-07-18)*](https://github.com/lumik/enum_flags/compare/v2.1.0...v2.1.1)
