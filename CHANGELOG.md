@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
+- Moved to Ubuntu 18.04 in automated tests.
+
 
 ### Fixed
 
