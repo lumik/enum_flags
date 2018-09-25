@@ -23,5 +23,7 @@ install:
 
 script:
   - docker exec -t ci bash -c "c++ --version"
-  - docker exec -t ci bash -c "cd /home/travis/build/$TRAVIS_REPO_SLUG && make test"
-  - docker exec -t ci bash -c "cd /home/travis/build/$TRAVIS_REPO_SLUG && make check-cpplint"
+  - docker exec -t ci bash -c "mkdir -p /home/travis/build/$TRAVIS_REPO_SLUG/build"
+  - docker exec -t ci bash -c "cd /home/travis/build/$TRAVIS_REPO_SLUG/build && cmake .. -DCMAKE_BUILD_TYPE=Release -DENUM_FLAGS_MAKE_TESTS=ON"
+  - docker exec -t ci bash -c "cd /home/travis/build/$TRAVIS_REPO_SLUG/build && make"
+  - docker exec -t ci bash -c "cd /home/travis/build/$TRAVIS_REPO_SLUG/build && make test ARGS=\"-V\""
