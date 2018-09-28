@@ -5,6 +5,10 @@ OPTION(ENUM_FLAGS_MAKE_TESTS
     "Makes tests."
     OFF)
 
+OPTION(ENUM_FLAGS_VERSION_INSTALL_INCLUDE
+    "Append version to sprelay include dir (include/sprelay<version>)."
+    OFF)
+
 # check for Doxygen
 find_package(Doxygen)
 
@@ -14,19 +18,86 @@ find_package(PythonInterp)
 # enable tests
 enable_testing()
 
+# install correct libraries into correct locations on all platforms
+include(GNUInstallDirs)
+
+# collect library files
+set(${PROJECT_NAME}_lib_hdr
+    enum_flags.h)
+
+# append version to include
+if(ENUM_FLAGS_VERSION_INSTALL_INCLUDE)
+    set(enum_flags_include_dirname enum_flags${PROJECT_VERSION})
+else()
+    set(enum_flags_include_dirname enum_flags)
+endif(ENUM_FLAGS_VERSION_INSTALL_INCLUDE)
+
+# create build and install file paths
+foreach(hdr ${${PROJECT_NAME}_lib_hdr})
+    list(APPEND ${PROJECT_NAME}_lib_hdr_build "${PROJECT_SOURCE_DIR}/src/enum_flags/${hdr}" )
+    list(APPEND ${PROJECT_NAME}_lib_hdr_install "${CMAKE_INSTALL_INCLUDEDIR}/${enum_flags_include_dirname}/${hdr}" )
+endforeach()
+
+# create the library
 add_library(${PROJECT_NAME} INTERFACE)
 target_include_directories(${PROJECT_NAME} SYSTEM INTERFACE $<INSTALL_INTERFACE:include>)
 target_include_directories(${PROJECT_NAME} INTERFACE
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>)
-install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}Config
+
+# attach header files to the library (mainly to display them in IDEs)
+target_sources(${PROJECT_NAME} INTERFACE
+    $<INSTALL_INTERFACE:${${PROJECT_NAME}_lib_hdr_install}>
+    $<BUILD_INTERFACE:${${PROJECT_NAME}_lib_hdr_build}>)
+
+# force C++11
+if(CMAKE_VERSION VERSION_LESS "3.8.2")
+    target_compile_features(${PROJECT_NAME} INTERFACE cxx_constexpr)
+else()
+    target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_11)
+endif(CMAKE_VERSION VERSION_LESS "3.8.2")
+
+# create alias to enable treating the library inside this projec as if it were imported in namespace
+add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
+
+# install the library and export it to target list
+install(FILES ${${PROJECT_NAME}_lib_hdr}
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${enum_flags_include_dirname}")
+install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}Targets
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
-install(EXPORT ${PROJECT_NAME}Config DESTINATION share/${PROJECT_NAME}/cmake)
-export(TARGETS ${PROJECT_NAME} FILE ${PROJECT_NAME}Config.cmake)
-install(FILES "${PROJECT_SOURCE_DIR}/src/enum_flags/enum_flags.h"
-    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/enum_flags${PROJECT_VERSION}")
 
+# export the target list into build tree
+export(EXPORT ${PROJECT_NAME}Targets
+    FILE "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}/${PROJECT_NAME}Targets.cmake"
+    NAMESPACE ${PROJECT_NAME}::
+)
+
+# create package to be discoverable in find package
+include(CMakePackageConfigHelpers)
+configure_package_config_file(cmake/${PROJECT_NAME}Config.cmake.in
+    "${PROJECT_BINARY_DIR}/${PROJECT_NAME}/${PROJECT_NAME}Config.cmake"
+    INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/enum_flags"
+    NO_SET_AND_CHECK_MACRO
+    NO_CHECK_REQUIRED_COMPONENTS_MACRO)
+write_basic_package_version_file(
+    "${PROJECT_BINARY_DIR}/${PROJECT_NAME}/${PROJECT_NAME}ConfigVersion.cmake"
+    COMPATIBILITY SameMajorVersion)
+
+# install package cmake files
+install(EXPORT ${PROJECT_NAME}Targets
+    FILE ${PROJECT_NAME}Targets.cmake
+    NAMESPACE ${PROJECT_NAME}::
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"
+    COMPONENT Develop)
+install(
+    FILES
+        "${PROJECT_BINARY_DIR}/${PROJECT_NAME}/${PROJECT_NAME}Config.cmake"
+        "${PROJECT_BINARY_DIR}/${PROJECT_NAME}/${PROJECT_NAME}ConfigVersion.cmake"
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"
+    COMPONENT Develop)
+
+# make tests
 if(ENUM_FLAGS_MAKE_TESTS)
     add_subdirectory(tests)
 endif(ENUM_FLAGS_MAKE_TESTS)

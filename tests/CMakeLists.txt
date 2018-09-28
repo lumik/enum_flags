@@ -7,7 +7,6 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 if(NOT MINGW)
     # find GTest
-    set(GTEST_ROOT "c:/Programs/Qt/Qt5.4.2/Tools/mingw491_32/i686-w64-mingw32")
     find_package(GTest REQUIRED)
 endif()
 
@@ -32,7 +31,7 @@ add_executable(${PROJECT_NAME}
     ${${PROJECT_NAME}_src})
 
 target_link_libraries(${PROJECT_NAME}
-    enum_flags)
+    enum_flags::enum_flags)
 if(MINGW)
     target_link_libraries(${PROJECT_NAME}
         gtest)
