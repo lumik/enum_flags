@@ -38,6 +38,8 @@
  * bitwise operators fails when enable_bitmask_operators() function returns `false` for used datatype.
  *
  * \code
+ * #include <enum_flags/enum_flags.h>
+ *
  * enum struct TestFlags : unsigned char
  * {
  *     One   = 1 << 0,
@@ -73,6 +75,8 @@
  * The only parameter is a dummy parameter for template function resolution.
  *
  * \code
+ * #include <enum_flags/enum_flags.h>
+ *
  * enum struct TestFlags : unsigned char
  * {
  *     One   = 1 << 0,

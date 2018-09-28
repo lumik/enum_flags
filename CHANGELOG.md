@@ -13,11 +13,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
+- Moved to cmake.
+
 
 ### Fixed
 
+- Fixed README.md Documentation link.
+
 
 ### Removed
+
+- Removed Makefile
 
 
 ## [Version 2.1.2 *(2018-07-24)*](https://github.com/lumik/enum_flags/compare/v2.1.1...v2.1.2)

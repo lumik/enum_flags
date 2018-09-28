@@ -39,27 +39,34 @@ git clone https://github.com/lumik/enum_flags.git
 
 #### Linux or Linux-like terminal (MSYS2, cygwin, ...)
 
-Run this command from the terminal
+Run this commands from the terminal from the `enum_flags` project directory to create build folder and `cmake` files.
+```
+mkdir build && cd build
+cmake .. -DCMAKE_INSTALL_PREFIX=.. -DCMAKE_BUILD_TYPE=Release -DENUM_FLAGS_MAKE_TESTS=ON \
+         -DENUM_FLAGS_VERSION_INSTALL_INCLUDE=OFF
+```
+The `CMAKE_INSTALL_PREFIX` specifies the installation path (the `..` means, that the library would be installed in the
+parent directory, i.e. `enum_flags` project directory) which defaults to system default paths if omited. The other two
+options specifies test configuration. They defaults to `CMAKE_BUILD_TYPE=Debug` and `ENUM_FLAGS_MAKE_TEST=OFF` if
+omited. The last define `ENUM_FLAGS_VERSION_INSTALL_INCLUDE` specifies, if the installation destination directory will
+be in the for `enum_flags/enum_flags.h` (if switched `OFF`) or `enum_flags<version>/enum_flags.h` (`<version>` can
+stand for `2.1.2` for example). The default is `OFF`.
+
+Then you can install the library by issuing
 ```
 make install
-```
-
-If you want to change destination directory, change variable DESTDIR, for example, if you want to place the header file
-to `/opt/include/enum_flags2.1.2/enum_flags.h`, you should invoke
-```
-make DESTDIR=/opt install
-```
-or if you want it to install under the current directory, run
-```
-make DESTDIR=. install
 ```
 
 
 #### Windows and MinGW
 
-You can also install the library also using mingw32-make but then you have to specify it during make process:
+
+If you are using Windows and MinWG you should also specify to the `cmake` command from the previous section
+`cmake .. -G "MinGW Makefiles"`. The other specifications are the same.
+
+To install the library, you have to issue then
 ```
-mingw32-make MINGW=1 DESTDIR=c:\path\to\libraries\home
+mingw32-make install
 ```
 
 
@@ -69,7 +76,7 @@ If you want bitwise operators to work for your enumeration, you have to overload
 to return true.
 
 ```cpp
-#include "enum_flags2.1.2/enum_flags.h"
+#include <enum_flags/enum_flags.h>
 
 enum struct TestFlags : unsigned char
 {
@@ -88,6 +95,9 @@ int main(int argc, char **argv) {
 ```
 
 More info can be found in the [documentation](#documentation).
+
+The integration into external cmake project and more usage examples can be found for example in the
+[sprelay][sprelay] application.
 
 
 ### Compilation of documentation and tests
@@ -161,27 +171,22 @@ More info can be found in the [documentation](#documentation).
 
 #### Command line compilation of documentation and tests
 
-Run these commands from console from the project root for your OS:
+After you run  the cmake commands from the installation section you can run the following commands from the `build`
+folder.
 - Linux 
   ```
   make
   make test
   make doc
   ```
-- Windows, MSYS2
+- Windows, MSYS2, MinGW
   ```
   mingw32-make
   mingw32-make test
   mingw32-make doc
   ```
-- Windows, MinGW withou MSYS2
-  ```
-  mingw32-make MINGW=1
-  mingw32-make MINGW=1 test
-  mingw32-make MINGW=1 doc
-  ```
 
-Tests can be also performed by running binary file from terminal in the `bin` folder.
+Tests can be also performed by running binary file from the `tests` folder from terminal.
 
 
 ## Documentation
@@ -195,3 +200,4 @@ Documentation can be found in the `doc` folder, html documentation can be opened
 [graphviz]: http://graphviz.org/
 [gtest]: https://github.com/google/googletest
 [cmake]: https://cmake.org/download/
+[sprelay]: https://github.com/biomolecules/sprelay
