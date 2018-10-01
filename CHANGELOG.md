@@ -13,7 +13,22 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
+
+### Fixed
+
+
+### Removed
+
+
+## [Version 3.0.0 *(2018-10-01)*](https://github.com/lumik/enum_flags/compare/v2.1.2...v3.0.0)
+
+
+### Changed
+
 - Moved to cmake.
+- Moved the header file under `lumik` subfolder.
+- Changed the `enable_enum_flags` function to `EnableEnumFlags` struct.
+- Moved `EnableEnumFlags` to namespace `lumik::enum_flags`.
 
 
 ### Fixed

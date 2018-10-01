@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.1.3)
-project(enum_flags VERSION 2.1.2 LANGUAGES CXX)
+project(enum_flags VERSION 3.0.0 LANGUAGES CXX)
 
 OPTION(ENUM_FLAGS_MAKE_TESTS
     "Makes tests."
