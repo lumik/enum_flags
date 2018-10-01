@@ -47,10 +47,21 @@ enum struct TestFlags : unsigned char
     Eight = 1 << 7
 };
 
+}  // namespace
+
+namespace lumik {
+namespace enum_flags {
 
 // this redefinition enables bitwise operator usage
-constexpr bool enable_bitmask_operators(TestFlags) { return true; }
+template<>
+struct EnableBitmaskOperators<TestFlags> {
+    static constexpr bool value = true;
+};
 
+}  // namespace enum_flags
+}  // namespace lumik
+
+namespace {
 
 // test enumeration without bitwise operators
 enum struct TestEnum : unsigned char
@@ -66,12 +77,55 @@ enum struct TestEnum : unsigned char
     Eight = 1 << 7
 };
 
+namespace dummy1 {
+// test enumeration without bitwise operators
+enum struct TestNamespacedEnum : unsigned char
+{
+    None  = 0,
+    One   = 1 << 0,
+    Two   = 1 << 1,
+    Three = 1 << 2,
+    Four  = 1 << 3,
+    Five  = 1 << 4,
+    Six   = 1 << 5,
+    Seven = 1 << 6,
+    Eight = 1 << 7
+};
+}  // namespace dummy1
+
+}  // namespace
+
+namespace lumik {
+namespace enum_flags {
+
+// this redefinition enables bitwise operator usage
+template<>
+struct EnableBitmaskOperators<dummy1::TestNamespacedEnum> {
+    static constexpr bool value = true;
+};
+
+}  // namespace enum_flags
+}  // namespace lumik
+
+namespace {
 
 // Tests availability of enable_bitmask_operators functions.
 TEST(enum_flags, enable_bitmask_operators) {
-  EXPECT_EQ(true, enable_bitmask_operators(TestFlags()));
-  EXPECT_EQ(false, ::enable_bitmask_operators(TestEnum()));
+  EXPECT_EQ(true, ::lumik::enum_flags::EnableBitmaskOperators<TestFlags>::value);
+  EXPECT_EQ(false, ::lumik::enum_flags::EnableBitmaskOperators<TestEnum>::value);
 }
+
+
+// Test operators in namespace
+namespace dummy2 {
+TEST(enum_flags, namespace) {
+  dummy1::TestNamespacedEnum a, b, c;
+  a = dummy1::TestNamespacedEnum::One;
+  b = dummy1::TestNamespacedEnum::Two;
+  c = a | b;
+  EXPECT_EQ(3, static_cast<int>(c));
+}
+}  // namespace dummy2
 
 
 // Tests | bitwise operator.

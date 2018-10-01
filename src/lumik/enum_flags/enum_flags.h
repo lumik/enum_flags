@@ -25,6 +25,7 @@
 /*!
  * \file      enum_flags.h
  * \brief     Templates for bitwise operators are defined in this file.
+ * \ingroup   group_enum_flags
  *
  * \author    Jakub Klener <lumiksro@centrum.cz>
  * \date      2018-07-03
@@ -32,31 +33,7 @@
  *
  * \copyright This project is released under the 3-Clause BSD License. You should have received a copy of the 3-Clause
  *            BSD License along with this program. If not, see https://opensource.org/licenses/.
- *
- * If you want bitwise operators to work for your enumeration, you have to overload enable_bitmask_operators()
- * function to return true. The library utilizes _SFINAE_ concept, specifically the fact, that interpretation of
- * bitwise operators fails when enable_bitmask_operators() function returns `false` for used datatype.
- *
- * \code
- * #include <lumik/enum_flags/enum_flags.h>
- *
- * enum struct TestFlags : unsigned char
- * {
- *     One   = 1 << 0,
- *     Two   = 1 << 1,
- * };
- *
- * constexpr bool enable_bitmask_operators(TestFlags) { return true; }
- *
- * int main(int argc, char **argv) {
- *     TestFlags a, b, c;
- *     a = TestFlags::One;
- *     b = TestFlags::Two;
- *     c = a | b;
- * }
- * \endcode
- *
- * \sa enable_bitmask_operators()
+ * \sa group_enum_flags.
  */
 
 
@@ -65,17 +42,39 @@
 
 #include<type_traits>
 
+/*!
+ * \defgroup group_enum_flags enum_flags
+ * \ingroup group_lumik
+ * \brief The enum_flags library.
+ *
+ * If you want bitwise operators to work for your enumeration, you have to specialize
+ * lumik::enum_flags::EnableBitmaskOperators struct template. The library utilizes _SFINAE_ concept, specifically the
+ * fact, that interpretation of bitwise operators fails when `lumik::enum_flags::EnableBitmaskOperators::value` is
+ * `false` for used datatype `E`.
+ *
+ * @{
+ */
 
 /*!
- * \brief This function template has to be overloaded in order to allow bitwise operators usage for user defined
+ * \namespace lumik::enum_flags
+ * \brief Namespace containing enum_flags library.
+ */
+
+
+namespace lumik {
+namespace enum_flags {
+
+/*!
+ * \brief This struct template has to be specialized in order to allow bitwise operators usage for user defined
  * enumeration.
- * \return true if bitwise operators should be enabled for this enum type.
  *
- * If you want bitwise operators to work for your enumeration, you have to overload this function to return true.
- * The only parameter is a dummy parameter for template function resolution.
+ * If you want bitwise operators to work for your enumeration, you have to specialize this struct to contain public
+ * member `value = true`. The struct have to be defined inside lumik::enum_flags namespace.
  *
  * \code
  * #include <lumik/enum_flags/enum_flags.h>
+ *
+ * namespace my_namespace {
  *
  * enum struct TestFlags : unsigned char
  * {
@@ -83,18 +82,36 @@
  *     Two   = 1 << 1,
  * };
  *
- * constexpr bool enable_bitmask_operators(TestFlags) { return true; }
+ * }  // namespace my_namespace
+ *
+ * namespace lumik {
+ * namespace enum_flags {
+ *
+ * template<>
+ * struct EnableBitmaskOperators<my_namespace::TestFlags> {
+ *     static constexpr bool value = true;
+ * };
+ *
+ * }  // namespace lumik
+ * }  // namespace enum_flags
  *
  * int main(int argc, char **argv) {
- *     TestFlags a, b, c;
+ *     my_namespace::TestFlags a, b, c;
  *     a = TestFlags::One;
  *     b = TestFlags::Two;
  *     c = a | b;
  * }
  * \endcode
+ * \tparam E The enumeration type
+ * \sa EnableBitmaskOperators::value
  */
 template<typename E>
-constexpr bool enable_bitmask_operators(E) { return false; }
+struct EnableBitmaskOperators {
+    static constexpr bool value = false;
+};
+
+}  // namespace enum_flags
+}  // namespace lumik
 
 
 /*!
@@ -105,7 +122,7 @@ constexpr bool enable_bitmask_operators(E) { return false; }
  * \sa operator&(), operator^(), operator~(), operator|=().
  */
 template<typename E>
-inline constexpr typename std::enable_if<enable_bitmask_operators(E()), E>::type
+inline constexpr typename std::enable_if<lumik::enum_flags::EnableBitmaskOperators<E>::value, E>::type
     operator|(E a, E b)
 {
     typedef typename std::underlying_type<E>::type underlying;
@@ -121,7 +138,7 @@ inline constexpr typename std::enable_if<enable_bitmask_operators(E()), E>::type
  * \sa operator|(), operator^(), operator~(), operator&=().
  */
 template<typename E>
-inline constexpr typename std::enable_if<enable_bitmask_operators(E()), E>::type
+inline constexpr typename std::enable_if<lumik::enum_flags::EnableBitmaskOperators<E>::value, E>::type
     operator&(E a, E b)
 {
     typedef typename std::underlying_type<E>::type underlying;
@@ -137,7 +154,7 @@ inline constexpr typename std::enable_if<enable_bitmask_operators(E()), E>::type
  * \sa operator|(), operator&(), operator~(), operator^=.
  */
 template<typename E>
-inline constexpr typename std::enable_if<enable_bitmask_operators(E()), E>::type
+inline constexpr typename std::enable_if<lumik::enum_flags::EnableBitmaskOperators<E>::value, E>::type
     operator^(E a, E b)
 {
     typedef typename std::underlying_type<E>::type underlying;
@@ -152,7 +169,7 @@ inline constexpr typename std::enable_if<enable_bitmask_operators(E()), E>::type
  * \sa operator|(), operator&(), operator^().
  */
 template<typename E>
-inline typename std::enable_if<enable_bitmask_operators(E()), E>::type
+inline typename std::enable_if<lumik::enum_flags::EnableBitmaskOperators<E>::value, E>::type
     operator~(E a)
 {
     typedef typename std::underlying_type<E>::type underlying;
@@ -168,7 +185,7 @@ inline typename std::enable_if<enable_bitmask_operators(E()), E>::type
  * \sa operator&=(), operator^=, operator|().
  */
 template<typename E>
-inline typename std::enable_if<enable_bitmask_operators(E()), E&>::type
+inline typename std::enable_if<lumik::enum_flags::EnableBitmaskOperators<E>::value, E&>::type
     operator|=(E &a, E b)
 {
     typedef typename std::underlying_type<E>::type underlying;
@@ -185,7 +202,7 @@ inline typename std::enable_if<enable_bitmask_operators(E()), E&>::type
  * \sa operator|=(), operator^=, operator&().
  */
 template<typename E>
-inline typename std::enable_if<enable_bitmask_operators(E()), E&>::type
+inline typename std::enable_if<lumik::enum_flags::EnableBitmaskOperators<E>::value, E&>::type
     operator&=(E &a, E b)
 {
     typedef typename std::underlying_type<E>::type underlying;
@@ -202,12 +219,21 @@ inline typename std::enable_if<enable_bitmask_operators(E()), E&>::type
  * \sa operator|=(), operator&=, operator^().
  */
 template<typename E>
-typename std::enable_if<enable_bitmask_operators(E()), E&>::type
+typename std::enable_if<lumik::enum_flags::EnableBitmaskOperators<E>::value, E&>::type
     operator^=(E &a, E b)
 {
     typedef typename std::underlying_type<E>::type underlying;
     a = static_cast<E>(static_cast<underlying>(a) ^ static_cast<underlying>(b));
     return a;
 }
+
+/*! @}*/  // enum_flags
+
+
+/*!
+ * \var EnableBitmaskOperators::value
+ * \brief Enables bitwise operators on the specified enumeration type.
+ */
+
 
 #endif  // LUMIK_ENUM_FLAGS_ENUM_FLAGS_H_

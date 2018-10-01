@@ -94,7 +94,7 @@ write_basic_package_version_file(
 # install package cmake files
 install(EXPORT ${PROJECT_NAME}Targets
     FILE ${PROJECT_NAME}Targets.cmake
-    NAMESPACE ${PROJECT_NAME}::
+    NAMESPACE lumik::${PROJECT_NAME}::
     DESTINATION "${enum_flags_install_cmake_dirname}"
     COMPONENT Develop)
 install(
