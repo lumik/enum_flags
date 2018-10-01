@@ -49,8 +49,8 @@ The `CMAKE_INSTALL_PREFIX` specifies the installation path (the `..` means, that
 parent directory, i.e. `enum_flags` project directory) which defaults to system default paths if omited. The other two
 options specifies test configuration. They defaults to `CMAKE_BUILD_TYPE=Debug` and `ENUM_FLAGS_MAKE_TEST=OFF` if
 omited. The last define `ENUM_FLAGS_VERSION_INSTALL_INCLUDE` specifies, if the installation destination directory will
-be in the for `enum_flags/enum_flags.h` (if switched `OFF`) or `enum_flags<version>/enum_flags.h` (`<version>` can
-stand for `2.1.2` for example). The default is `OFF`.
+be in the for `lumik/enum_flags/enum_flags.h` (if switched `OFF`) or `enum_flags<version>/enum_flags.h` (`<version>`
+can stand for `2.1.2` for example). The default is `OFF`.
 
 Then you can install the library by issuing
 ```
@@ -76,7 +76,7 @@ If you want bitwise operators to work for your enumeration, you have to overload
 to return true.
 
 ```cpp
-#include <enum_flags/enum_flags.h>
+#include <lumik/enum_flags/enum_flags.h>
 
 enum struct TestFlags : unsigned char
 {
@@ -191,7 +191,8 @@ Tests can be also performed by running binary file from the `tests` folder from 
 
 ## Documentation
 
-Documentation can be found in the `doc` folder, html documentation can be opened by the `index.html` file.
+Documentation can be found in the `share/doc/enum_flags` folder, html documentation can be opened by the `index.html`
+file.
 
 
 [git]: https://git-scm.com/

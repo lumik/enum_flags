@@ -14,8 +14,8 @@
 
 *.autosave
 
-# Documentation
-/doc
+# Documentation and other shared staff
+/share
 
 # binaries
 /bin

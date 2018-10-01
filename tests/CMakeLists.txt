@@ -31,7 +31,7 @@ add_executable(${PROJECT_NAME}
     ${${PROJECT_NAME}_src})
 
 target_link_libraries(${PROJECT_NAME}
-    enum_flags::enum_flags)
+    lumik::enum_flags::enum_flags)
 if(MINGW)
     target_link_libraries(${PROJECT_NAME}
         gtest)

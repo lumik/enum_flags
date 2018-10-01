@@ -27,15 +27,22 @@ set(${PROJECT_NAME}_lib_hdr
 
 # append version to include
 if(ENUM_FLAGS_VERSION_INSTALL_INCLUDE)
-    set(enum_flags_include_dirname enum_flags${PROJECT_VERSION})
+    set(enum_flags_include_dirname ${PROJECT_NAME}${PROJECT_VERSION})
 else()
-    set(enum_flags_include_dirname enum_flags)
+    set(enum_flags_include_dirname ${PROJECT_NAME})
 endif(ENUM_FLAGS_VERSION_INSTALL_INCLUDE)
+
+set(enum_flags_source_dirname "${PROJECT_SOURCE_DIR}/src/lumik/${PROJECT_NAME}")
+set(enum_flags_install_include_dirname "${CMAKE_INSTALL_INCLUDEDIR}/lumik/${enum_flags_include_dirname}")
+set(enum_flags_install_cmake_dirname "${CMAKE_INSTALL_DATAROOTDIR}/cmake/${PROJECT_NAME}")
+set(enum_flags_bin_cmake_dirname "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}")
+set(enum_flags_install_doc_dirname "${CMAKE_INSTALL_DATAROOTDIR}/doc/${PROJECT_NAME}")
 
 # create build and install file paths
 foreach(hdr ${${PROJECT_NAME}_lib_hdr})
-    list(APPEND ${PROJECT_NAME}_lib_hdr_build "${PROJECT_SOURCE_DIR}/src/enum_flags/${hdr}" )
-    list(APPEND ${PROJECT_NAME}_lib_hdr_install "${CMAKE_INSTALL_INCLUDEDIR}/${enum_flags_include_dirname}/${hdr}" )
+    list(APPEND ${PROJECT_NAME}_lib_hdr_build "${enum_flags_source_dirname}/${hdr}" )
+    list(APPEND ${PROJECT_NAME}_lib_hdr_install
+        "${enum_flags_install_include_dirname}/${hdr}" )
 endforeach()
 
 # create the library
@@ -57,11 +64,11 @@ else()
 endif(CMAKE_VERSION VERSION_LESS "3.8.2")
 
 # create alias to enable treating the library inside this projec as if it were imported in namespace
-add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
+add_library(lumik::${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
 # install the library and export it to target list
-install(FILES ${${PROJECT_NAME}_lib_hdr}
-    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${enum_flags_include_dirname}")
+install(FILES ${${PROJECT_NAME}_lib_hdr_build}
+    DESTINATION "${enum_flags_install_include_dirname}")
 install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}Targets
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -69,32 +76,32 @@ install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}Targets
 
 # export the target list into build tree
 export(EXPORT ${PROJECT_NAME}Targets
-    FILE "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}/${PROJECT_NAME}Targets.cmake"
-    NAMESPACE ${PROJECT_NAME}::
+    FILE "${enum_flags_bin_cmake_dirname}/${PROJECT_NAME}Targets.cmake"
+    NAMESPACE lumik::${PROJECT_NAME}::
 )
 
 # create package to be discoverable in find package
 include(CMakePackageConfigHelpers)
 configure_package_config_file(cmake/${PROJECT_NAME}Config.cmake.in
-    "${PROJECT_BINARY_DIR}/${PROJECT_NAME}/${PROJECT_NAME}Config.cmake"
-    INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/enum_flags"
+    "${enum_flags_bin_cmake_dirname}/${PROJECT_NAME}Config.cmake"
+    INSTALL_DESTINATION "${enum_flags_install_cmake_dirname}"
     NO_SET_AND_CHECK_MACRO
     NO_CHECK_REQUIRED_COMPONENTS_MACRO)
 write_basic_package_version_file(
-    "${PROJECT_BINARY_DIR}/${PROJECT_NAME}/${PROJECT_NAME}ConfigVersion.cmake"
+    "${enum_flags_bin_cmake_dirname}/${PROJECT_NAME}ConfigVersion.cmake"
     COMPATIBILITY SameMajorVersion)
 
 # install package cmake files
 install(EXPORT ${PROJECT_NAME}Targets
     FILE ${PROJECT_NAME}Targets.cmake
     NAMESPACE ${PROJECT_NAME}::
-    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"
+    DESTINATION "${enum_flags_install_cmake_dirname}"
     COMPONENT Develop)
 install(
     FILES
-        "${PROJECT_BINARY_DIR}/${PROJECT_NAME}/${PROJECT_NAME}Config.cmake"
-        "${PROJECT_BINARY_DIR}/${PROJECT_NAME}/${PROJECT_NAME}ConfigVersion.cmake"
-    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"
+        "${enum_flags_bin_cmake_dirname}/${PROJECT_NAME}Config.cmake"
+        "${enum_flags_bin_cmake_dirname}/${PROJECT_NAME}ConfigVersion.cmake"
+    DESTINATION "${enum_flags_install_cmake_dirname}"
     COMPONENT Develop)
 
 # make tests
@@ -107,7 +114,7 @@ if(DOXYGEN_FOUND)
     # get Qt documentation location
     set(doxyfile_in ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in)
     set(doxyfile ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
-    set(doxy_main_page ${CMAKE_CURRENT_SOURCE_DIR}/src/enum_flags/index.md)
+    set(doxy_main_page ${enum_flags_source_dirname}/index.md)
     configure_file(${doxyfile_in} ${doxyfile} @ONLY)
 
     add_custom_target(doc
@@ -115,7 +122,7 @@ if(DOXYGEN_FOUND)
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         COMMENT "Generating documentation with Doxygen"
         VERBATIM)
-    install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doc DESTINATION ${CMAKE_INSTALL_PREFIX} OPTIONAL)
+    install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doc/html DESTINATION ${enum_flags_install_doc_dirname} OPTIONAL)
 endif(DOXYGEN_FOUND)
 
 # Other tests
