@@ -130,5 +130,5 @@ if(PYTHONINTERP_FOUND)
     add_test(NAME pylint
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         COMMAND ${PYTHON_EXECUTABLE}
-            third_party/cpplint-1.3.0/cpplint.py --recursive src tests)
+            external/cpplint-1.3.0/cpplint.py --recursive src tests)
 endif(PYTHONINTERP_FOUND)
