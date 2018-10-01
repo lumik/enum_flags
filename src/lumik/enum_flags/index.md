@@ -72,11 +72,13 @@ mingw32-make install
 
 ### Usage
 
-If you want bitwise operators to work for your enumeration, you have to overload `enable_bitmask_operators()` function
-to return true.
+If you want bitwise operators to work for your enumeration, you have to specialize
+lumik::enum_flags::EnableBitmaskOperators struct template to contain member `value = true`.
 
 ```cpp
-#include <enum_flags/enum_flags.h>
+#include <lumik/enum_flags/enum_flags.h>
+
+namespace my_namespace {
 
 enum struct TestFlags : unsigned char
 {
@@ -84,14 +86,24 @@ enum struct TestFlags : unsigned char
     Two   = 1 << 1,
 };
 
-constexpr bool enable_bitmask_operators(TestFlags) { return true; }
+}  // namespace my_namespace
+
+namespace lumik {
+namespace enum_flags {
+
+template<>
+struct EnableBitmaskOperators<my_namespace::TestFlags> {
+    static constexpr bool value = true;
+};
+
+}  // namespace lumik
+}  // namespace enum_flags
 
 int main(int argc, char **argv) {
-    TestFlags a, b, c;
+    my_namespace::TestFlags a, b, c;
     a = TestFlags::One;
     b = TestFlags::Two;
     c = a | b;
-}
 ```
 
 More info can be found in the [documentation](#documentation).
@@ -191,7 +203,7 @@ Tests can be also performed by running binary file from the `tests` folder from 
 
 ## Documentation @anchor documentation
 
-The documentation of functionality can be found in \ref enum_flags.h.
+The documentation of functionality can be found in \ref group_enum_flags module.
 
 
 [git]: https://git-scm.com/
