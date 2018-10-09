@@ -111,9 +111,25 @@ endif(ENUM_FLAGS_MAKE_TESTS)
 
 # documentation
 if(DOXYGEN_FOUND)
+    # find cppreference file
+    find_file(cppreference_tag_file cppreference-doxygen-web.tag.xml HINTS ENV CPPREFERENCE_TAGS_ROOT)
+    if (cppreference_tag_file)
+        set(cppreference_tags "\"${cppreference_tag_file}=http://en.cppreference.com/w/\"")
+    else()
+        add_custom_command(
+            OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/cppreference-doxygen-web.tag.xml
+            COMMAND ${CMAKE_COMMAND}
+            -D DEST_DIR=${CMAKE_CURRENT_BINARY_DIR}
+            -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/get_cppreference_tags.cmake
+            COMMENT "Getting cppreference.com doxygen tags...")
+        add_custom_target(get_ccpreference_tags DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/cppreference-doxygen-web.tag.xml)
+        set(cppreference_tags
+            "\"${CMAKE_CURRENT_BINARY_DIR}/cppreference-doxygen-web.tag.xml=http://en.cppreference.com/w/\"")
+    endif()
     # get Qt documentation location
     set(doxyfile_in ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in)
     set(doxyfile ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
+    set(enum_flags_tags ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.tags)
     set(doxy_main_page ${enum_flags_source_dirname}/index.md)
     configure_file(${doxyfile_in} ${doxyfile} @ONLY)
 
@@ -122,7 +138,13 @@ if(DOXYGEN_FOUND)
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         COMMENT "Generating documentation with Doxygen"
         VERBATIM)
+    if (NOT cppreference_tag_file)
+        add_dependencies(doc get_ccpreference_tags)
+    endif()
     install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doc/html DESTINATION ${enum_flags_install_doc_dirname} OPTIONAL)
+    install(
+        FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.tags
+        DESTINATION ${enum_flags_install_doc_dirname} OPTIONAL)
 endif(DOXYGEN_FOUND)
 
 # Other tests
