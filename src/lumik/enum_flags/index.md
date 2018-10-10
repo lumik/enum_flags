@@ -50,7 +50,7 @@ parent directory, i.e. `enum_flags` project directory) which defaults to system 
 options specifies test configuration. They defaults to `CMAKE_BUILD_TYPE=Debug` and `ENUM_FLAGS_MAKE_TEST=OFF` if
 omited. The last define `ENUM_FLAGS_VERSION_INSTALL_INCLUDE` specifies, if the installation destination directory will
 be in the for `enum_flags/enum_flags.h` (if switched `OFF`) or `enum_flags<version>/enum_flags.h` (`<version>` can
-stand for `2.1.2` for example). The default is `OFF`.
+stand for `3.1.0` for example). The default is `OFF`.
 
 Then you can install the library by issuing
 ```

@@ -20,6 +20,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Removed
 
 
+## [Version 3.1.0 *(2018-10-10)*](https://github.com/lumik/enum_flags/compare/v3.0.0...v3.1.0)
+
+
+### Added
+
+- Importable doxygen documentation
+- Appveyor tests for MSVC and MinGW
+- Clang tests
+- Coverage tests
+- Badges
+
+
 ## [Version 3.0.0 *(2018-10-01)*](https://github.com/lumik/enum_flags/compare/v2.1.2...v3.0.0)
 
 
