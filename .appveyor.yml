@@ -1,0 +1,76 @@
+version: '1.0.0-{build}'
+
+image: Visual Studio 2017
+
+configuration:
+  - Release
+
+clone_folder: C:\projects\source
+
+environment:
+  matrix:
+    - compiler: msvc-15-seh
+      generator: "Visual Studio 15 2017 Win64"
+      gtest_defines: "-Dgtest_force_shared_crt=ON"
+    - compiler: gcc-7.3.0-posix
+      generator: "MinGW Makefiles"
+      mingw_platform: x86-64
+      # cxx_path: 'C:\mingw-w64\i686-6.3.0-posix-dwarf-rt_v5-rev1\mingw32\bin'
+
+install:
+  # store build path
+  - set ORIGIN_PATH=%cd%
+  # git bash conflicts with MinGW makefiles
+  - if "%generator%"=="MinGW Makefiles" (set "PATH=%PATH:C:\Program Files\Git\usr\bin;=%")
+
+  # setup mingw
+  #- if not "%cxx_path%"=="" (set "PATH=%PATH%;%cxx_path%")
+  - cd C:\mingw-w64
+
+  # list available mingw compilers
+  - dir
+
+  # select the mingw compiler
+  - ps: |
+      if ($env:generator -Match "MinGW") {
+        if ($env:mingw_platform -Match "x86-32") {
+          $env:Path += ";C:\mingw-w64\i686-7.3.0-posix-dwarf-rt_v5-rev0\mingw32\bin"
+        } else {
+          $env:Path += ";C:\mingw-w64\x86_64-7.3.0-posix-seh-rt_v5-rev0\mingw64\bin"
+        }
+        g++ --version
+      }
+
+  # compile google test
+  - cd C:\projects
+  - git clone --depth=1 https://github.com/google/googletest.git
+  - cd googletest\googletest
+  - md build
+  - cd build
+  - cmake .. -G "%generator%" %gtest_defines%
+  - cmake --build . --config %configuration%
+
+  # install google test
+  - cd ..
+  - md lib
+  - ps: |
+      if ($env:generator -eq "MinGW Makefiles") {
+        Copy-Item build\lib\*.a lib
+      } else {
+        Copy-Item build\lib\Release\*.lib lib
+      }
+  - set GTEST_ROOT=%cd%
+
+  # move back to build path  
+  - cd %ORIGIN_PATH%
+
+before_build:
+  - md build
+  - cd build
+  - cmake C:\projects\source -G "%generator%" -DENUM_FLAGS_MAKE_TESTS=ON
+
+build_script:
+  - cmake --build . --config %configuration%
+
+test_script:
+  - ctest -C %configuration% -V
