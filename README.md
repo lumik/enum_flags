@@ -1,5 +1,10 @@
 # enum_flags
 
+[![codecov](https://codecov.io/gh/lumik/enum_flags/branch/master/graph/badge.svg)](https://codecov.io/gh/lumik/enum_flags)
+[![Build Status](https://travis-ci.org/lumik/enum_flags.svg?branch=master)](https://travis-ci.org/lumik/enum_flags)
+[![Build status](https://ci.appveyor.com/api/projects/status/997j7fdbsrqlqiot/branch/master?svg=true)](https://ci.appveyor.com/project/lumik/enum-flags/branch/master)
+
+
 Library which overloades bitwise operators for scoped enumerations.
 
 
