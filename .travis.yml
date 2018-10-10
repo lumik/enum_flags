@@ -4,18 +4,36 @@ services:
 # It is not really needed, other than for showing correct language tag in Travis CI build log.
 language: cpp
 
+matrix:
+  include:
+   - compiler: gcc
+   - compiler: clang
+     env: CCCOMPILER=/usr/bin/clang-7 CXXCOMPILER=/usr/bin/clang++-7
+
 before_install:
   - docker run -d --name ci -v $(pwd):/home/travis/build/$TRAVIS_REPO_SLUG ubuntu:bionic tail -f /dev/null
   - docker ps
 
 install:
   - docker exec -t ci bash -c "apt-get update;
-    apt-get install -y build-essential libgtest-dev valgrind cmake python wget"
+    apt install -y build-essential libgtest-dev valgrind cmake python wget"
+  - if [[ "${TRAVIS_COMPILER}" == "clang" ]]; then
+      docker exec -t ci bash -c "wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -;
+        echo \"deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-7 main\" | tee /etc/apt/sources.list.d/clang.list;
+        echo \"deb-src http://apt.llvm.org/bionic/ llvm-toolchain-bionic-7 main\" | tee -a /etc/apt/sources.list.d/clang.list;
+        apt update;
+        apt install -y clang-7 clang-tidy-7 clang-format-7 clang-tools-7 libc++-7-dev";
+    fi
+  - if [[ "${TRAVIS_COMPILER}" == "clang" ]]; then
+      export CC=${CCCOMPILER};
+      export CXX=${CXXCOMPILER};
+    fi
+  - docker exec -t ci bash -c "${CXX} -v"
   - docker exec -t ci bash -c "cd /home/travis/build && wget https://github.com/google/googletest/archive/release-1.8.0.tar.gz"
   - docker exec -t ci bash -c "cd /home/travis/build && tar xf release-1.8.0.tar.gz"
   - docker exec -t ci bash -c "cd /home/travis/build/googletest-release-1.8.0/googletest && mkdir -p build"
-  - docker exec -t ci bash -c "cd /home/travis/build/googletest-release-1.8.0/googletest/build && cmake -DBUILD_SHARED_LIBS=ON .."
-  - docker exec -t ci bash -c "cd /home/travis/build/googletest-release-1.8.0/googletest/build && make"
+  - docker exec -t ci bash -c "cd /home/travis/build/googletest-release-1.8.0/googletest/build && CC=${CC} CXX=${CXX} cmake -DBUILD_SHARED_LIBS=ON .."
+  - docker exec -t ci bash -c "cd /home/travis/build/googletest-release-1.8.0/googletest/build && cmake --build ."
   - docker exec -t ci bash -c "cp -a /home/travis/build/googletest-release-1.8.0/googletest/include/gtest /usr/local/include"
   - docker exec -t ci bash -c "cp -a /home/travis/build/googletest-release-1.8.0/googletest/build/*.so /usr/local/lib"
   - docker exec -t ci bash -c "echo \"/usr/local/lib\" > /etc/ld.so.conf.d/google-test.conf"
@@ -24,6 +42,6 @@ install:
 script:
   - docker exec -t ci bash -c "c++ --version"
   - docker exec -t ci bash -c "mkdir -p /home/travis/build/$TRAVIS_REPO_SLUG/build"
-  - docker exec -t ci bash -c "cd /home/travis/build/$TRAVIS_REPO_SLUG/build && cmake .. -DCMAKE_BUILD_TYPE=Release -DENUM_FLAGS_MAKE_TESTS=ON"
-  - docker exec -t ci bash -c "cd /home/travis/build/$TRAVIS_REPO_SLUG/build && make"
-  - docker exec -t ci bash -c "cd /home/travis/build/$TRAVIS_REPO_SLUG/build && make test ARGS=\"-V\""
+  - docker exec -t ci bash -c "cd /home/travis/build/$TRAVIS_REPO_SLUG/build && CC=${CC} CXX=${CXX} cmake .. -DCMAKE_BUILD_TYPE=Release -DENUM_FLAGS_MAKE_TESTS=ON"
+  - docker exec -t ci bash -c "cd /home/travis/build/$TRAVIS_REPO_SLUG/build && cmake --build ."
+  - docker exec -t ci bash -c "cd /home/travis/build/$TRAVIS_REPO_SLUG/build && ctest -V"
