@@ -33,6 +33,12 @@ if(MINGW)
     list(APPEND enum_flags_console_link_flags "-Wl,-subsystem,console")
 endif()
 
+if (ENABLE_COVERAGE)
+    add_custom_target(coverage)
+    set_property(GLOBAL PROPERTY coverage_raw_files "")
+    set_property(GLOBAL PROPERTY coverage_binaries "")
+endif()
+
 set(${PROJECT_NAME}_src
     ${PROJECT_SOURCE_DIR}/enum_flags_unittest.cpp)
 
@@ -59,5 +65,71 @@ endif()
 if(enum_flags_console_link_flags)
     set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS ${enum_flags_console_link_flags})
 endif(enum_flags_console_link_flags)
-
 add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME})
+
+if (ENABLE_COVERAGE)
+    target_link_libraries(${PROJECT_NAME} -fprofile-instr-generate -fcoverage-mapping)
+    add_custom_command(
+            OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.profraw
+            COMMAND LLVM_PROFILE_FILE=${PROJECT_NAME}.profraw ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}
+            DEPENDS ${PROJECT_NAME}
+            COMMENT "Creating raw coverage data...")
+    set_property(GLOBAL APPEND PROPERTY coverage_raw_files "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.profraw")
+    set_property(GLOBAL APPEND PROPERTY coverage_binaries "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}")
+endif()
+
+if (ENABLE_COVERAGE)
+    if (DEFINED ENV{LLVM_PROFILE_BINARY})
+        set(llvm_profile_binary_file $ENV{LLVM_PROFILE_BINARY})
+    else()
+        get_filename_component(compiler_parent ${CMAKE_CXX_COMPILER} DIRECTORY)
+        set(llvm_profile_binary_file ${compiler_parent}/llvm-profdata)
+    endif()
+
+    if (DEFINED ENV{LLVM_COV_BINARY})
+        set(llvm_cov_binary_file $ENV{LLVM_COV_BINARY})
+    else()
+        get_filename_component(compiler_parent ${CMAKE_CXX_COMPILER} DIRECTORY)
+        set(llvm_cov_binary_file ${compiler_parent}/llvm-cov)
+    endif()
+
+    if (EXISTS ${llvm_profile_binary_file})
+        message(STATUS "llvm_profile_binary_file: ${llvm_profile_binary_file}")
+    else()
+        message(WARNING "llvm_cov_binary_file does not exist at location ${llvm_profile_binary_file}. Set please LLVM_COV_BINARY environment variable to llvm-cov")
+    endif()
+    if(EXISTS ${llvm_cov_binary_file})
+        message(STATUS "llvm_cov_binary_file: ${llvm_cov_binary_file}")
+    else()
+        message(WARNING "llvm_cov_binary_file does not exists at location ${llvm_cov_binary_file}. Set please LLVM_COV_BINARY environment variable to llvm-cov")
+    endif()
+
+    if (EXISTS ${llvm_profile_binary_file} AND EXISTS ${llvm_cov_binary_file})
+        # covert cmake global list to strings
+        get_property(coverage_raw_files GLOBAL PROPERTY coverage_raw_files)
+        get_property(coverage_binaries GLOBAL PROPERTY coverage_binaries)
+        foreach(item ${coverage_raw_files})
+            set(coverage_raw_files_string "${coverage_raw_files_string} ${item}")
+        endforeach()
+        foreach(item ${coverage_binaries})
+            set(coverage_binaries_string "${coverage_binaries_string} ${item}")
+        endforeach()
+        string(STRIP ${coverage_raw_files_string} coverage_raw_files_string)
+        string(STRIP ${coverage_binaries_string} coverage_binaries_string)
+
+        # merge .profraw files into .profdata file and convert them into enum_flags.coverage.txt summary
+        add_custom_command(
+            OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/enum_flags.coverage.txt
+            COMMAND ${llvm_profile_binary_file} merge -sparse ${coverage_raw_files_string}
+                -o ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.profdata
+            COMMAND ${llvm_cov_binary_file} show
+                ${coverage_binaries_string}
+                -instr-profile=${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.profdata
+                > enum_flags.coverage.txt
+            DEPENDS ${coverage_raw_files}
+            COMMENT "Merging and converting coverage data...")
+        add_custom_target(enum_flags_gather_coverage
+            DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/enum_flags.coverage.txt)
+        add_dependencies(coverage enum_flags_gather_coverage)
+    endif()
+endif()

@@ -9,6 +9,15 @@ OPTION(ENUM_FLAGS_VERSION_INSTALL_INCLUDE
     "Append version to sprelay include dir (include/sprelay<version>)."
     OFF)
 
+# code coverage
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    option(ENABLE_COVERAGE "Enable coverage reporting for Clang." FALSE)
+
+    if (ENABLE_COVERAGE)
+        add_compile_options(-fprofile-instr-generate -fcoverage-mapping)
+    endif()
+endif()
+
 # check for Doxygen
 find_package(Doxygen)
 
@@ -119,8 +128,8 @@ if(DOXYGEN_FOUND)
         add_custom_command(
             OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/cppreference-doxygen-web.tag.xml
             COMMAND ${CMAKE_COMMAND}
-            -D DEST_DIR=${CMAKE_CURRENT_BINARY_DIR}
-            -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/get_cppreference_tags.cmake
+                -D DEST_DIR=${CMAKE_CURRENT_BINARY_DIR}
+                -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/get_cppreference_tags.cmake
             COMMENT "Getting cppreference.com doxygen tags...")
         add_custom_target(get_ccpreference_tags DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/cppreference-doxygen-web.tag.xml)
         set(cppreference_tags

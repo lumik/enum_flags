@@ -9,6 +9,8 @@ matrix:
    - compiler: gcc
    - compiler: clang
      env: CCCOMPILER=/usr/bin/clang-7 CXXCOMPILER=/usr/bin/clang++-7
+   - compiler: clang
+     env: CCCOMPILER=/usr/bin/clang-7 CXXCOMPILER=/usr/bin/clang++-7 COVERAGE=1 LLVM_PROFILE_BINARY=/usr/bin/llvm-profdata-7 LLVM_COV_BINARY=/usr/bin/llvm-cov-7
 
 before_install:
   - docker run -d --name ci -v $(pwd):/home/travis/build/$TRAVIS_REPO_SLUG ubuntu:bionic tail -f /dev/null
@@ -32,16 +34,33 @@ install:
   - docker exec -t ci bash -c "cd /home/travis/build && wget https://github.com/google/googletest/archive/release-1.8.0.tar.gz"
   - docker exec -t ci bash -c "cd /home/travis/build && tar xf release-1.8.0.tar.gz"
   - docker exec -t ci bash -c "cd /home/travis/build/googletest-release-1.8.0/googletest && mkdir -p build"
-  - docker exec -t ci bash -c "cd /home/travis/build/googletest-release-1.8.0/googletest/build && CC=${CC} CXX=${CXX} cmake -DBUILD_SHARED_LIBS=ON .."
+  #- docker exec -t ci bash -c "cd /home/travis/build/googletest-release-1.8.0/googletest/build && CC=${CC} CXX=${CXX} cmake -DBUILD_SHARED_LIBS=ON .."
+  - docker exec -t ci bash -c "cd /home/travis/build/googletest-release-1.8.0/googletest/build && CC=${CC} CXX=${CXX} cmake .."
   - docker exec -t ci bash -c "cd /home/travis/build/googletest-release-1.8.0/googletest/build && cmake --build ."
-  - docker exec -t ci bash -c "cp -a /home/travis/build/googletest-release-1.8.0/googletest/include/gtest /usr/local/include"
-  - docker exec -t ci bash -c "cp -a /home/travis/build/googletest-release-1.8.0/googletest/build/*.so /usr/local/lib"
-  - docker exec -t ci bash -c "echo \"/usr/local/lib\" > /etc/ld.so.conf.d/google-test.conf"
-  - docker exec -t ci bash -c "ldconfig"
+  #- docker exec -t ci bash -c "cp -a /home/travis/build/googletest-release-1.8.0/googletest/include/gtest /usr/local/include"
+  #- docker exec -t ci bash -c "cp -a /home/travis/build/googletest-release-1.8.0/googletest/build/*.so /usr/local/lib"
+  - docker exec -t ci bash -c "cp -a /home/travis/build/googletest-release-1.8.0/googletest/include/gtest /usr/include"
+  - docker exec -t ci bash -c "cp -a /home/travis/build/googletest-release-1.8.0/googletest/build/*.a /usr/lib"
+  #- docker exec -t ci bash -c "echo \"/usr/local/lib\" > /etc/ld.so.conf.d/google-test.conf"
+  #- docker exec -t ci bash -c "ldconfig"
 
 script:
   - docker exec -t ci bash -c "c++ --version"
   - docker exec -t ci bash -c "mkdir -p /home/travis/build/$TRAVIS_REPO_SLUG/build"
-  - docker exec -t ci bash -c "cd /home/travis/build/$TRAVIS_REPO_SLUG/build && CC=${CC} CXX=${CXX} cmake .. -DCMAKE_BUILD_TYPE=Release -DENUM_FLAGS_MAKE_TESTS=ON"
+  - if [[ -z "${COVERAGE}" ]]; then
+      docker exec -t ci bash -c "cd /home/travis/build/$TRAVIS_REPO_SLUG/build && CC=${CC} CXX=${CXX} cmake .. -DCMAKE_BUILD_TYPE=Release -DENUM_FLAGS_MAKE_TESTS=ON";
+    else
+      docker exec -t ci bash -c "cd /home/travis/build/$TRAVIS_REPO_SLUG/build && CC=${CC} CXX=${CXX} LLVM_PROFILE_BINARY=${LLVM_PROFILE_BINARY}
+        LLVM_COV_BINARY=${LLVM_COV_BINARY} cmake .. -DCMAKE_BUILD_TYPE=Release -DENUM_FLAGS_MAKE_TESTS=ON -DENABLE_COVERAGE=ON";
+    fi
   - docker exec -t ci bash -c "cd /home/travis/build/$TRAVIS_REPO_SLUG/build && cmake --build ."
-  - docker exec -t ci bash -c "cd /home/travis/build/$TRAVIS_REPO_SLUG/build && ctest -V"
+  - if [[ -z "${COVERAGE}" ]]; then
+      docker exec -t ci bash -c "cd /home/travis/build/$TRAVIS_REPO_SLUG/build && ctest -V";
+    else
+      docker exec -t ci bash -c "cd /home/travis/build/$TRAVIS_REPO_SLUG/build && cmake --build . --target coverage";
+    fi
+
+after_success:
+  - if [[ ! -z "${COVERAGE}" ]]; then
+      bash <(curl -s https://codecov.io/bash);
+    fi
