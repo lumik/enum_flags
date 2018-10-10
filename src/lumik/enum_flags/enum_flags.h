@@ -110,6 +110,10 @@ struct EnableBitmaskOperators {
     static constexpr bool value = false;
 };
 
+// declaration (not needed in c++17, which introduces inline variables and make constexpr variables inline by default)
+template<typename E>
+constexpr bool EnableBitmaskOperators<E>::value;
+
 }  // namespace enum_flags
 }  // namespace lumik
 

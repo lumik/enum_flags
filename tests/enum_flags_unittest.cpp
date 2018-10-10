@@ -107,14 +107,20 @@ struct EnableBitmaskOperators<dummy1::TestNamespacedEnum> {
 }  // namespace enum_flags
 }  // namespace lumik
 
+// declaration of members of partialy specialized structs (not needed in c++17, which introduces inline variables and
+// make constexpr variables inline by default)
+constexpr bool lumik::enum_flags::EnableBitmaskOperators<TestFlags>::value;
+constexpr bool lumik::enum_flags::EnableBitmaskOperators<dummy1::TestNamespacedEnum>::value;
+
+
 namespace {
 
 // Tests availability of enable_bitmask_operators functions.
 TEST(enum_flags, enable_bitmask_operators) {
-  EXPECT_EQ(true, ::lumik::enum_flags::EnableBitmaskOperators<TestFlags>::value);
-  EXPECT_EQ(false, ::lumik::enum_flags::EnableBitmaskOperators<TestEnum>::value);
+  EXPECT_EQ(true, lumik::enum_flags::EnableBitmaskOperators<TestFlags>::value);
+  EXPECT_EQ(false, lumik::enum_flags::EnableBitmaskOperators<TestEnum>::value);
+  EXPECT_EQ(true, lumik::enum_flags::EnableBitmaskOperators<dummy1::TestNamespacedEnum>::value);
 }
-
 
 // Test operators in namespace
 namespace dummy2 {
@@ -213,6 +219,6 @@ TEST(enum_flags, XOR_assignment) {
 
 
 int main(int argc, char **argv) {
-  ::testing::InitGoogleTest(&argc, argv);
+  testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }
