@@ -35,11 +35,11 @@ set(${PROJECT_NAME}_lib_hdr
     enum_flags.h)
 
 # append version to include
-if(ENUM_FLAGS_VERSION_INSTALL_INCLUDE)
+if (ENUM_FLAGS_VERSION_INSTALL_INCLUDE)
     set(enum_flags_include_dirname ${PROJECT_NAME}${PROJECT_VERSION})
 else()
     set(enum_flags_include_dirname ${PROJECT_NAME})
-endif(ENUM_FLAGS_VERSION_INSTALL_INCLUDE)
+endif()
 
 set(enum_flags_source_dirname "${PROJECT_SOURCE_DIR}/src/lumik/${PROJECT_NAME}")
 set(enum_flags_install_include_dirname "${CMAKE_INSTALL_INCLUDEDIR}/lumik/${enum_flags_include_dirname}")
@@ -66,11 +66,11 @@ target_sources(${PROJECT_NAME} INTERFACE
     $<BUILD_INTERFACE:${${PROJECT_NAME}_lib_hdr_build}>)
 
 # force C++11
-if(CMAKE_VERSION VERSION_LESS "3.8.2")
+if (CMAKE_VERSION VERSION_LESS "3.8.2")
     target_compile_features(${PROJECT_NAME} INTERFACE cxx_constexpr)
 else()
     target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_11)
-endif(CMAKE_VERSION VERSION_LESS "3.8.2")
+endif()
 
 # create alias to enable treating the library inside this projec as if it were imported in namespace
 add_library(lumik::${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
@@ -114,12 +114,12 @@ install(
     COMPONENT Develop)
 
 # make tests
-if(ENUM_FLAGS_MAKE_TESTS)
+if (ENUM_FLAGS_MAKE_TESTS)
     add_subdirectory(tests)
-endif(ENUM_FLAGS_MAKE_TESTS)
+endif()
 
 # documentation
-if(DOXYGEN_FOUND)
+if (DOXYGEN_FOUND)
     # find cppreference file
     find_file(cppreference_tag_file cppreference-doxygen-web.tag.xml HINTS ENV CPPREFERENCE_TAGS_ROOT)
     if (cppreference_tag_file)
@@ -154,12 +154,12 @@ if(DOXYGEN_FOUND)
     install(
         FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.tags
         DESTINATION ${enum_flags_install_doc_dirname} OPTIONAL)
-endif(DOXYGEN_FOUND)
+endif()
 
 # Other tests
-if(PYTHONINTERP_FOUND)
+if (PYTHONINTERP_FOUND)
     add_test(NAME pylint
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         COMMAND ${PYTHON_EXECUTABLE}
             external/cpplint-1.3.0/cpplint.py --recursive src tests)
-endif(PYTHONINTERP_FOUND)
+endif()

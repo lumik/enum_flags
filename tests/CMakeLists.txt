@@ -5,9 +5,9 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-if(NOT MINGW OR DEFINED ENV{GTEST_ROOT})
+if (NOT MINGW OR DEFINED ENV{GTEST_ROOT})
     #set policy of <package_name>_ROOT
-    if(POLICY CMP0074)
+    if (POLICY CMP0074)
         cmake_policy(SET CMP0074 NEW)
     endif()
 
@@ -20,7 +20,7 @@ endif()
 #set(THREADS_PREFER_PTHREAD_FLAG TRUE)
 find_package(Threads REQUIRED)
 
-if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
     add_compile_options(-pipe -frtti -Wall -Wextra -fexceptions)
 endif()
 
@@ -28,7 +28,7 @@ if (MSVC)
     add_compile_options(/W4)
 endif()
 
-if(MINGW)
+if (MINGW)
     add_compile_options(-mthreads -fno-keep-inline-dllexport -DUNICODE)
     list(APPEND enum_flags_console_link_flags "-Wl,-subsystem,console")
 endif()
@@ -47,7 +47,7 @@ add_executable(${PROJECT_NAME}
 
 target_link_libraries(${PROJECT_NAME}
     lumik::enum_flags::enum_flags)
-if(MINGW AND NOT DEFINED ENV{GTEST_ROOT})
+if (MINGW AND NOT DEFINED ENV{GTEST_ROOT})
     target_link_libraries(${PROJECT_NAME}
         gtest)
 elseif(DEFINED ENV{GTEST_ROOT})
@@ -62,9 +62,9 @@ else()
     target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE
         ${GTEST_INCLUDE_DIRS})
 endif()
-if(enum_flags_console_link_flags)
+if (enum_flags_console_link_flags)
     set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS ${enum_flags_console_link_flags})
-endif(enum_flags_console_link_flags)
+endif()
 add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME})
 
 if (ENABLE_COVERAGE)
@@ -98,7 +98,7 @@ if (ENABLE_COVERAGE)
     else()
         message(WARNING "llvm_cov_binary_file does not exist at location ${llvm_profile_binary_file}. Set please LLVM_COV_BINARY environment variable to llvm-cov")
     endif()
-    if(EXISTS ${llvm_cov_binary_file})
+    if (EXISTS ${llvm_cov_binary_file})
         message(STATUS "llvm_cov_binary_file: ${llvm_cov_binary_file}")
     else()
         message(WARNING "llvm_cov_binary_file does not exists at location ${llvm_cov_binary_file}. Set please LLVM_COV_BINARY environment variable to llvm-cov")
