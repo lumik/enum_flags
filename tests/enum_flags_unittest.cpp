@@ -58,6 +58,10 @@ struct EnableBitmaskOperators<TestFlags> {
     static constexpr bool value = true;
 };
 
+// declaration of members of partialy specialized structs (not needed in c++17, which introduces inline variables and
+// make constexpr variables inline by default)
+constexpr bool EnableBitmaskOperators<TestFlags>::value;
+
 }  // namespace enum_flags
 }  // namespace lumik
 
@@ -104,13 +108,13 @@ struct EnableBitmaskOperators<dummy1::TestNamespacedEnum> {
     static constexpr bool value = true;
 };
 
+// declaration of members of partialy specialized structs (not needed in c++17, which introduces inline variables and
+// make constexpr variables inline by default)
+constexpr bool EnableBitmaskOperators<dummy1::TestNamespacedEnum>::value;
+
 }  // namespace enum_flags
 }  // namespace lumik
 
-// declaration of members of partialy specialized structs (not needed in c++17, which introduces inline variables and
-// make constexpr variables inline by default)
-constexpr bool lumik::enum_flags::EnableBitmaskOperators<TestFlags>::value;
-constexpr bool lumik::enum_flags::EnableBitmaskOperators<dummy1::TestNamespacedEnum>::value;
 
 
 namespace {
@@ -218,7 +222,7 @@ TEST(enum_flags, XOR_assignment) {
 }  // namespace
 
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }

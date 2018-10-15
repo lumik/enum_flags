@@ -96,10 +96,15 @@ struct EnableBitmaskOperators<my_namespace::TestFlags> {
     static constexpr bool value = true;
 };
 
+// declaration of members of partialy specialized structs (not needed in c++17,
+// which introduces inline variables and make constexpr variables inline by
+// default)
+constexpr bool EnableBitmaskOperators<TestFlags>::value;
+
 }  // namespace lumik
 }  // namespace enum_flags
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
     my_namespace::TestFlags a, b, c;
     a = TestFlags::One;
     b = TestFlags::Two;
