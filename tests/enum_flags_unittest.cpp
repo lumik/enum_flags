@@ -1,7 +1,9 @@
+// -*-c++-*-
+
 /***************************************************************************
 **                                                                        **
 **  Overloades for bitwise operators for scoped enumerations.             **
-**  Copyright (C) 2017 Jakub Klener                                       **
+**  Copyright (C) 2018 Jakub Klener                                       **
 **                                                                        **
 **  This file is part of enum_flags project.                              **
 **                                                                        **
@@ -18,6 +20,20 @@
 **  If not, see https://opensource.org/licenses/                          **
 **                                                                        **
 ****************************************************************************/
+
+
+/*!
+ * \file      enum_flags_unittest.cpp
+ * \brief     Tests for enum_flags.
+ * \ingroup   group_enum_flags
+ *
+ * \author    Jakub Klener <lumiksro@centrum.cz>
+ * \date      2018-07-03
+ * \copyright Copyright (C) 2018 Jakub Klener. All rights reserved.
+ *
+ * \copyright This project is released under the 3-Clause BSD License. You should have received a copy of the 3-Clause
+ *            BSD License along with this program. If not, see https://opensource.org/licenses/.
+ */
 
 
 #include <iostream>
