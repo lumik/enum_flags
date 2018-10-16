@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+- Style guide submodule.
+
 
 ### Changed
 
@@ -17,6 +19,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - Corrected documentation.
+- Changed test file header.
+- Cleaned up Cmakelists.
 
 
 ### Removed
@@ -27,11 +31,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- Importable doxygen documentation
-- Appveyor tests for MSVC and MinGW
-- Clang tests
-- Coverage tests
-- Badges
+- Importable doxygen documentation.
+- Appveyor tests for MSVC and MinGW.
+- Clang tests.
+- Coverage tests.
+- Badges.
 
 
 ## [Version 3.0.0 *(2018-10-01)*](https://github.com/lumik/enum_flags/compare/v2.1.2...v3.0.0)
