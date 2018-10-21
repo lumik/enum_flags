@@ -11,14 +11,23 @@ matrix:
      env: CCCOMPILER=/usr/bin/clang-7 CXXCOMPILER=/usr/bin/clang++-7
    - compiler: clang
      env: CCCOMPILER=/usr/bin/clang-7 CXXCOMPILER=/usr/bin/clang++-7 COVERAGE=1 LLVM_PROFILE_BINARY=/usr/bin/llvm-profdata-7 LLVM_COV_BINARY=/usr/bin/llvm-cov-7
+   - compiler: clang
+     env: CCCOMPILER=/usr/bin/clang-7 CXXCOMPILER=/usr/bin/clang++-7 ADDRESS_SANITIZE=1
+   - compiler: clang
+     env: CCCOMPILER=/usr/bin/clang-7 CXXCOMPILER=/usr/bin/clang++-7 THREAD_SANITIZE=1
+   - compiler: clang
+     env: CCCOMPILER=/usr/bin/clang-7 CXXCOMPILER=/usr/bin/clang++-7 UB_SANITIZE=1
 
 before_install:
   - docker run -d --name ci -v $(pwd):/home/travis/build/$TRAVIS_REPO_SLUG ubuntu:bionic tail -f /dev/null
   - docker ps
 
 install:
+  # install packages
   - docker exec -t ci bash -c "apt-get update;
     apt install -y build-essential libgtest-dev valgrind cmake python wget"
+
+  # install clang
   - if [[ "${TRAVIS_COMPILER}" == "clang" ]]; then
       docker exec -t ci bash -c "wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -;
         echo \"deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-7 main\" | tee /etc/apt/sources.list.d/clang.list;
@@ -26,34 +35,68 @@ install:
         apt update;
         apt install -y clang-7 clang-tidy-7 clang-format-7 clang-tools-7 libc++-7-dev";
     fi
+  # It is necessary to setup compiler here because the environment variables are reset to defaults by travis-ci at the start.
   - if [[ "${TRAVIS_COMPILER}" == "clang" ]]; then
       export CC=${CCCOMPILER};
       export CXX=${CXXCOMPILER};
     fi
+
+  # print version of the compiler
   - docker exec -t ci bash -c "${CXX} -v"
+
+  # install google test
   - docker exec -t ci bash -c "cd /home/travis/build && wget https://github.com/google/googletest/archive/release-1.8.0.tar.gz"
   - docker exec -t ci bash -c "cd /home/travis/build && tar xf release-1.8.0.tar.gz"
   - docker exec -t ci bash -c "cd /home/travis/build/googletest-release-1.8.0/googletest && mkdir -p build"
+  # configure it as shared library
   #- docker exec -t ci bash -c "cd /home/travis/build/googletest-release-1.8.0/googletest/build && CC=${CC} CXX=${CXX} cmake -DBUILD_SHARED_LIBS=ON .."
+  # configure it as static library
   - docker exec -t ci bash -c "cd /home/travis/build/googletest-release-1.8.0/googletest/build && CC=${CC} CXX=${CXX} cmake .."
+
+  # compile the google test
   - docker exec -t ci bash -c "cd /home/travis/build/googletest-release-1.8.0/googletest/build && cmake --build ."
+
+  # install the google test as shared library
   #- docker exec -t ci bash -c "cp -a /home/travis/build/googletest-release-1.8.0/googletest/include/gtest /usr/local/include"
   #- docker exec -t ci bash -c "cp -a /home/travis/build/googletest-release-1.8.0/googletest/build/*.so /usr/local/lib"
-  - docker exec -t ci bash -c "cp -a /home/travis/build/googletest-release-1.8.0/googletest/include/gtest /usr/include"
-  - docker exec -t ci bash -c "cp -a /home/travis/build/googletest-release-1.8.0/googletest/build/*.a /usr/lib"
   #- docker exec -t ci bash -c "echo \"/usr/local/lib\" > /etc/ld.so.conf.d/google-test.conf"
   #- docker exec -t ci bash -c "ldconfig"
+  # install the google test as static library
+  - docker exec -t ci bash -c "cp -a /home/travis/build/googletest-release-1.8.0/googletest/include/gtest /usr/include"
+  - docker exec -t ci bash -c "cp -a /home/travis/build/googletest-release-1.8.0/googletest/build/*.a /usr/lib"
 
 script:
-  - docker exec -t ci bash -c "c++ --version"
+  # configure the project
   - docker exec -t ci bash -c "mkdir -p /home/travis/build/$TRAVIS_REPO_SLUG/build"
-  - if [[ -z "${COVERAGE}" ]]; then
-      docker exec -t ci bash -c "cd /home/travis/build/$TRAVIS_REPO_SLUG/build && CC=${CC} CXX=${CXX} cmake .. -DCMAKE_BUILD_TYPE=Release -DENUM_FLAGS_MAKE_TESTS=ON";
-    else
+  - if [[ ! -z "${COVERAGE}" ]]; then
+      echo "coverage cmake:" &&
+      echo "cmake .. -DCMAKE_BUILD_TYPE=Release -DENUM_FLAGS_MAKE_TESTS=ON -DENABLE_COVERAGE=ON" &&
       docker exec -t ci bash -c "cd /home/travis/build/$TRAVIS_REPO_SLUG/build && CC=${CC} CXX=${CXX} LLVM_PROFILE_BINARY=${LLVM_PROFILE_BINARY}
         LLVM_COV_BINARY=${LLVM_COV_BINARY} cmake .. -DCMAKE_BUILD_TYPE=Release -DENUM_FLAGS_MAKE_TESTS=ON -DENABLE_COVERAGE=ON";
+    elif [[ ! -z "${ADDRESS_SANITIZE}" ]]; then
+      echo "asan cmake:" &&
+      echo "cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS_DEBUG=\"-O1 -g\" -DENUM_FLAGS_MAKE_TESTS=ON -DADDRESS_SANITIZE=ON" &&
+      docker exec -t ci bash -c "cd /home/travis/build/$TRAVIS_REPO_SLUG/build && CC=${CC} CXX=${CXX}
+        cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS_DEBUG=\"-O1 -g\" -DENUM_FLAGS_MAKE_TESTS=ON -DADDRESS_SANITIZE=ON";
+    elif [[ ! -z "${THREAD_SANITIZE}" ]]; then
+      echo "tsan cmake:" &&
+      echo "cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS_DEBUG=\"-O1 -g\" -DENUM_FLAGS_MAKE_TESTS=ON -DTHREAD_SANITIZE=ON" &&
+      docker exec -t ci bash -c "cd /home/travis/build/$TRAVIS_REPO_SLUG/build && CC=${CC} CXX=${CXX}
+        cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS_DEBUG=\"-O1 -g\" -DENUM_FLAGS_MAKE_TESTS=ON -DTHREAD_SANITIZE=ON";
+    elif [[ ! -z "${UB_SANITIZE}" ]]; then
+      echo "ubsan cmake:" &&
+      echo "cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS_DEBUG=\"-O1 -g\" -DENUM_FLAGS_MAKE_TESTS=ON -DUB_SANITIZE=ON" &&
+      docker exec -t ci bash -c "cd /home/travis/build/$TRAVIS_REPO_SLUG/build && CC=${CC} CXX=${CXX}
+        cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS_DEBUG=\"-O1 -g\" -DENUM_FLAGS_MAKE_TESTS=ON -DUB_SANITIZE=ON";
+    else
+      echo "normal cmake:" &&
+      echo "cmake .. -DCMAKE_BUILD_TYPE=Release -DENUM_FLAGS_MAKE_TESTS=ON" &&
+      docker exec -t ci bash -c "cd /home/travis/build/$TRAVIS_REPO_SLUG/build && CC=${CC} CXX=${CXX}
+        cmake .. -DCMAKE_BUILD_TYPE=Release -DENUM_FLAGS_MAKE_TESTS=ON";
     fi
+  # build the project
   - docker exec -t ci bash -c "cd /home/travis/build/$TRAVIS_REPO_SLUG/build && cmake --build ."
+  # run tests
   - if [[ -z "${COVERAGE}" ]]; then
       docker exec -t ci bash -c "cd /home/travis/build/$TRAVIS_REPO_SLUG/build && ctest -V";
     else
@@ -61,6 +104,7 @@ script:
     fi
 
 after_success:
+  # report coverage
   - if [[ ! -z "${COVERAGE}" ]]; then
       bash <(curl -s https://codecov.io/bash);
     fi

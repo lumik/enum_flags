@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Style guide submodule.
 - Added option to export cmake target as system header include.
+- Added option to run sanitized tests.
 
 
 ### Changed

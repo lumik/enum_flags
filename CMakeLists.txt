@@ -15,10 +15,49 @@ OPTION(ENUM_FLAGS_INCLUDE_AS_SYSTEM
 
 # code coverage
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    option(ENABLE_COVERAGE "Enable coverage reporting for Clang." FALSE)
-
+    # coverage
+    option(ENABLE_COVERAGE
+        "Enable coverage reporting for Clang."
+        FALSE)
     if (ENABLE_COVERAGE)
+        message(STATUS "Adding coverage support.")
         add_compile_options(-fprofile-instr-generate -fcoverage-mapping)
+    endif()
+
+    # address sanitizer
+    option(ADDRESS_SANITIZE
+        "Compile with Address Sanitizer."
+        FALSE)
+    if (ADDRESS_SANITIZE)
+        message(STATUS "Adding Address and Leak Sanitizer support.")
+        add_compile_options(-fsanitize=address -fno-omit-frame-pointer)
+    endif()
+
+    # thread sanitizer
+    option(THREAD_SANITIZE
+        "Compile with Thread Sanitizer."
+        FALSE)
+    if (THREAD_SANITIZE)
+        message(STATUS "Adding thread sanitizer support.")
+        add_compile_options(-fsanitize=thread -fno-omit-frame-pointer)
+    endif()
+
+    # memory sanitizer
+    option(MEMORY_SANITIZE
+        "Compile with Memory Sanitizer. Be sure to all linked libraries be memory sanitized too."
+        FALSE)
+    if (MEMORY_SANITIZE)
+        message(STATUS "Adding Memory sanitizer support.")
+        add_compile_options(-fsanitize=memory -fno-omit-frame-pointer)
+    endif()
+
+    # undefined behavior sanitizer
+    option(UB_SANITIZE
+        "Compile with Undefined Behavior Sanitizer."
+        FALSE)
+    if (UB_SANITIZE)
+        message(STATUS "Adding Undefined Behavior sanitizer support.")
+        add_compile_options(-fsanitize=undefined -fno-omit-frame-pointer -fno-sanitize-recover=undefined)
     endif()
 endif()
 
