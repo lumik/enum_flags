@@ -9,6 +9,10 @@ OPTION(ENUM_FLAGS_VERSION_INSTALL_INCLUDE
     "Append version to sprelay include dir (include/sprelay<version>)."
     OFF)
 
+OPTION(ENUM_FLAGS_INCLUDE_AS_SYSTEM
+    "Export cmake target as system include (i.e. disables compiler warnings for it)."
+    OFF)
+
 # code coverage
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     option(ENABLE_COVERAGE "Enable coverage reporting for Clang." FALSE)
@@ -56,7 +60,11 @@ endforeach()
 
 # create the library
 add_library(${PROJECT_NAME} INTERFACE)
-target_include_directories(${PROJECT_NAME} SYSTEM INTERFACE $<INSTALL_INTERFACE:include>)
+if (ENUM_FLAGS_INCLUDE_AS_SYSTEM)
+    target_include_directories(${PROJECT_NAME} SYSTEM INTERFACE $<INSTALL_INTERFACE:include>)
+else()
+    target_include_directories(${PROJECT_NAME} INTERFACE $<INSTALL_INTERFACE:include>)
+endif()
 target_include_directories(${PROJECT_NAME} INTERFACE
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>)
 
