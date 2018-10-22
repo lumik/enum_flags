@@ -17,6 +17,8 @@ matrix:
      env: CCCOMPILER=/usr/bin/clang-7 CXXCOMPILER=/usr/bin/clang++-7 THREAD_SANITIZE=1
    - compiler: clang
      env: CCCOMPILER=/usr/bin/clang-7 CXXCOMPILER=/usr/bin/clang++-7 UB_SANITIZE=1
+   - compiler: clang
+     env: CCCOMPILER=/usr/bin/clang-7 CXXCOMPILER=/usr/bin/clang++-7 MEMORY_SANITIZE=1
 
 before_install:
   - docker run -d --name ci -v $(pwd):/home/travis/build/$TRAVIS_REPO_SLUG ubuntu:bionic tail -f /dev/null
@@ -24,8 +26,11 @@ before_install:
 
 install:
   # install packages
-  - docker exec -t ci bash -c "apt-get update;
+  - docker exec -t ci bash -c "apt update;
     apt install -y build-essential libgtest-dev valgrind cmake python wget"
+  - if [[ ! -z "${MEMORY_SANITIZE}" ]]; then
+      docker exec -t ci bash -c "apt install -y subversion";
+    fi
 
   # install clang
   - if [[ "${TRAVIS_COMPILER}" == "clang" ]]; then
@@ -40,6 +45,32 @@ install:
       export CC=${CCCOMPILER};
       export CXX=${CXXCOMPILER};
     fi
+  # compile libc++ for memory sanitizer
+  - if [[ ! -z "${MEMORY_SANITIZE}" ]]; then
+      docker exec -t ci bash -c "cd /home/travis/build && svn co -q http://llvm.org/svn/llvm-project/llvm/trunk llvm";
+    fi
+  - if [[ ! -z "${MEMORY_SANITIZE}" ]]; then
+      docker exec -t ci bash -c "cd /home/travis/build/llvm/projects && svn co -q http://llvm.org/svn/llvm-project/libcxx/trunk libcxx";
+    fi
+  - if [[ ! -z "${MEMORY_SANITIZE}" ]]; then
+      docker exec -t ci bash -c "cd /home/travis/build/llvm/projects && svn co -q http://llvm.org/svn/llvm-project/libcxxabi/trunk libcxxabi";
+    fi
+  - if [[ ! -z "${MEMORY_SANITIZE}" ]]; then
+      docker exec -t ci bash -c "mkdir -p /home/travis/build/libcxx_msan";
+    fi
+  - if [[ ! -z "${MEMORY_SANITIZE}" ]]; then
+      docker exec -t ci bash -c "cd /home/travis/build/libcxx_msan && CC=${CC} CXX=${CXX} cmake ../llvm -DCMAKE_BUILD_TYPE=Release -DLLVM_USE_SANITIZER=Memory";
+    fi
+  - if [[ ! -z "${MEMORY_SANITIZE}" ]]; then
+      docker exec -t ci bash -c "cd /home/travis/build/libcxx_msan && make cxx -j2";
+    fi
+  - if [[ ! -z "${MEMORY_SANITIZE}" ]]; then
+      export MSAN_CFLAGS="-stdlib=libc++ -nostdinc++ -fsanitize=memory";
+      export MSAN_CFLAGS="${MSAN_CFLAGS} -L/home/travis/build/libcxx_msan/lib";
+      export MSAN_CFLAGS="${MSAN_CFLAGS} -I/home/travis/build/libcxx_msan/include/c++/v1";
+      export MSAN_CFLAGS="${MSAN_CFLAGS} -Wl,-rpath,/home/travis/build/libcxx_msan/lib";
+      echo "MSAN_CFLAGS=${MSAN_CFLAGS}";
+    fi
 
   # print version of the compiler
   - docker exec -t ci bash -c "${CXX} -v"
@@ -51,7 +82,15 @@ install:
   # configure it as shared library
   #- docker exec -t ci bash -c "cd /home/travis/build/googletest-release-1.8.0/googletest/build && CC=${CC} CXX=${CXX} cmake -DBUILD_SHARED_LIBS=ON .."
   # configure it as static library
-  - docker exec -t ci bash -c "cd /home/travis/build/googletest-release-1.8.0/googletest/build && CC=${CC} CXX=${CXX} cmake .."
+  - if [[ -z "${MEMORY_SANITIZE}" ]]; then
+      echo "Configuring gtest:" &&
+      docker exec -t ci bash -c "cd /home/travis/build/googletest-release-1.8.0/googletest/build && CC=${CC} CXX=${CXX} cmake ..";
+    else
+      echo "Configuring memory sanitized gtest:" &&
+      echo "MSAN_CFLAGS=${MSAN_CFLAGS}" &&
+      docker exec -t ci bash -c "cd /home/travis/build/googletest-release-1.8.0/googletest/build && CC=${CC} CXX=${CXX}
+        cmake .. -DCMAKE_C_FLAGS=\"${MSAN_CFLAGS}\" -DCMAKE_CXX_FLAGS=\"${MSAN_CFLAGS}\"";
+    fi
 
   # compile the google test
   - docker exec -t ci bash -c "cd /home/travis/build/googletest-release-1.8.0/googletest/build && cmake --build ."
@@ -88,6 +127,12 @@ script:
       echo "cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS_DEBUG=\"-O1 -g\" -DENUM_FLAGS_MAKE_TESTS=ON -DUB_SANITIZE=ON" &&
       docker exec -t ci bash -c "cd /home/travis/build/$TRAVIS_REPO_SLUG/build && CC=${CC} CXX=${CXX}
         cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS_DEBUG=\"-O1 -g\" -DENUM_FLAGS_MAKE_TESTS=ON -DUB_SANITIZE=ON";
+    elif [[ ! -z "${MEMORY_SANITIZE}" ]]; then
+      echo "msan cmake:" &&
+      echo "MSAN_CFLAGS=${MSAN_CFLAGS}" &&
+      echo "cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS_DEBUG=\"-O1 -g\" -DENUM_FLAGS_MAKE_TESTS=ON -DMEMORY_SANITIZE=ON" &&
+      docker exec -t ci bash -c "cd /home/travis/build/$TRAVIS_REPO_SLUG/build && CC=${CC} CXX=${CXX}
+        cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS_DEBUG=\"-O1 -g ${MSAN_CFLAGS}\" -DENUM_FLAGS_MAKE_TESTS=ON -DMEMORY_SANITIZE=ON";
     else
       echo "normal cmake:" &&
       echo "cmake .. -DCMAKE_BUILD_TYPE=Release -DENUM_FLAGS_MAKE_TESTS=ON" &&
