@@ -8,7 +8,7 @@ matrix:
   include:
    - compiler: gcc
    - compiler: clang
-     env: CCCOMPILER=/usr/bin/clang-7 CXXCOMPILER=/usr/bin/clang++-7
+     env: CCCOMPILER=/usr/bin/clang-7 CXXCOMPILER=/usr/bin/clang++-7 CLANG_FORMAT=1
    - compiler: clang
      env: CCCOMPILER=/usr/bin/clang-7 CXXCOMPILER=/usr/bin/clang++-7 COVERAGE=1 LLVM_PROFILE_BINARY=/usr/bin/llvm-profdata-7 LLVM_COV_BINARY=/usr/bin/llvm-cov-7
    - compiler: clang
@@ -27,7 +27,7 @@ before_install:
 install:
   # install packages
   - docker exec -t ci bash -c "apt update;
-    apt install -y build-essential libgtest-dev valgrind cmake python wget"
+    apt install -y build-essential valgrind cmake python wget git"
   - if [[ ! -z "${MEMORY_SANITIZE}" ]]; then
       docker exec -t ci bash -c "apt install -y subversion";
     fi
@@ -146,6 +146,10 @@ script:
       docker exec -t ci bash -c "cd /home/travis/build/$TRAVIS_REPO_SLUG/build && ctest -V";
     else
       docker exec -t ci bash -c "cd /home/travis/build/$TRAVIS_REPO_SLUG/build && cmake --build . --target coverage";
+    fi
+  # run tests
+  - if [[ ! -z "${CLANG_FORMAT}" ]]; then
+      docker exec -t ci bash -c "cd /home/travis/build/$TRAVIS_REPO_SLUG && clang-format-7 -i \$(find src/lumik/enum_flags tests -name *.h -o -name *.cpp -o -name *.tpp | tr \"\\n\" \" \") && git diff --exit-code || (echo \"Code was not formatted using clang-format!\"; false)";
     fi
 
 after_success:
