@@ -40,7 +40,7 @@
 #ifndef LUMIK_ENUM_FLAGS_ENUM_FLAGS_H_
 #define LUMIK_ENUM_FLAGS_ENUM_FLAGS_H_
 
-#include<type_traits>
+#include <type_traits>
 
 /*!
  * \defgroup group_enum_flags enum_flags
@@ -111,7 +111,8 @@ namespace enum_flags {
  * \sa EnableBitmaskOperators::value
  */
 template<typename E>
-struct EnableBitmaskOperators {
+struct EnableBitmaskOperators
+{
     static constexpr bool value = false;
 };
 
@@ -131,8 +132,8 @@ constexpr bool EnableBitmaskOperators<E>::value;
  * \sa operator&(), operator^(), operator~(), operator|=().
  */
 template<typename E>
-inline constexpr typename std::enable_if<lumik::enum_flags::EnableBitmaskOperators<E>::value, E>::type
-    operator|(E a, E b)
+inline constexpr typename std::enable_if<lumik::enum_flags::EnableBitmaskOperators<E>::value, E>::type operator|(
+    E a, E b)
 {
     typedef typename std::underlying_type<E>::type underlying;
     return static_cast<E>(static_cast<underlying>(a) | static_cast<underlying>(b));
@@ -147,8 +148,8 @@ inline constexpr typename std::enable_if<lumik::enum_flags::EnableBitmaskOperato
  * \sa operator|(), operator^(), operator~(), operator&=().
  */
 template<typename E>
-inline constexpr typename std::enable_if<lumik::enum_flags::EnableBitmaskOperators<E>::value, E>::type
-    operator&(E a, E b)
+inline constexpr typename std::enable_if<lumik::enum_flags::EnableBitmaskOperators<E>::value, E>::type operator&(
+    E a, E b)
 {
     typedef typename std::underlying_type<E>::type underlying;
     return static_cast<E>(static_cast<underlying>(a) & static_cast<underlying>(b));
@@ -163,8 +164,8 @@ inline constexpr typename std::enable_if<lumik::enum_flags::EnableBitmaskOperato
  * \sa operator|(), operator&(), operator~(), operator^=.
  */
 template<typename E>
-inline constexpr typename std::enable_if<lumik::enum_flags::EnableBitmaskOperators<E>::value, E>::type
-    operator^(E a, E b)
+inline constexpr typename std::enable_if<lumik::enum_flags::EnableBitmaskOperators<E>::value, E>::type operator^(
+    E a, E b)
 {
     typedef typename std::underlying_type<E>::type underlying;
     return static_cast<E>(static_cast<underlying>(a) ^ static_cast<underlying>(b));
@@ -178,8 +179,7 @@ inline constexpr typename std::enable_if<lumik::enum_flags::EnableBitmaskOperato
  * \sa operator|(), operator&(), operator^().
  */
 template<typename E>
-inline typename std::enable_if<lumik::enum_flags::EnableBitmaskOperators<E>::value, E>::type
-    operator~(E a)
+inline typename std::enable_if<lumik::enum_flags::EnableBitmaskOperators<E>::value, E>::type operator~(E a)
 {
     typedef typename std::underlying_type<E>::type underlying;
     return static_cast<E>(~static_cast<underlying>(a));
@@ -194,8 +194,7 @@ inline typename std::enable_if<lumik::enum_flags::EnableBitmaskOperators<E>::val
  * \sa operator&=(), operator^=, operator|().
  */
 template<typename E>
-inline typename std::enable_if<lumik::enum_flags::EnableBitmaskOperators<E>::value, E&>::type
-    operator|=(E &a, E b)
+inline typename std::enable_if<lumik::enum_flags::EnableBitmaskOperators<E>::value, E&>::type operator|=(E& a, E b)
 {
     typedef typename std::underlying_type<E>::type underlying;
     a = static_cast<E>(static_cast<underlying>(a) | static_cast<underlying>(b));
@@ -211,8 +210,7 @@ inline typename std::enable_if<lumik::enum_flags::EnableBitmaskOperators<E>::val
  * \sa operator|=(), operator^=, operator&().
  */
 template<typename E>
-inline typename std::enable_if<lumik::enum_flags::EnableBitmaskOperators<E>::value, E&>::type
-    operator&=(E &a, E b)
+inline typename std::enable_if<lumik::enum_flags::EnableBitmaskOperators<E>::value, E&>::type operator&=(E& a, E b)
 {
     typedef typename std::underlying_type<E>::type underlying;
     a = static_cast<E>(static_cast<underlying>(a) & static_cast<underlying>(b));
@@ -228,8 +226,7 @@ inline typename std::enable_if<lumik::enum_flags::EnableBitmaskOperators<E>::val
  * \sa operator|=(), operator&=, operator^().
  */
 template<typename E>
-typename std::enable_if<lumik::enum_flags::EnableBitmaskOperators<E>::value, E&>::type
-    operator^=(E &a, E b)
+typename std::enable_if<lumik::enum_flags::EnableBitmaskOperators<E>::value, E&>::type operator^=(E& a, E b)
 {
     typedef typename std::underlying_type<E>::type underlying;
     a = static_cast<E>(static_cast<underlying>(a) ^ static_cast<underlying>(b));

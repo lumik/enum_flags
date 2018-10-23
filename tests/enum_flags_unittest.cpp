@@ -50,15 +50,14 @@ namespace {
 
 
 // test enumeration
-enum struct TestFlags : unsigned char
-{
-    None  = 0,
-    One   = 1 << 0,
-    Two   = 1 << 1,
+enum struct TestFlags : unsigned char {
+    None = 0,
+    One = 1 << 0,
+    Two = 1 << 1,
     Three = 1 << 2,
-    Four  = 1 << 3,
-    Five  = 1 << 4,
-    Six   = 1 << 5,
+    Four = 1 << 3,
+    Five = 1 << 4,
+    Six = 1 << 5,
     Seven = 1 << 6,
     Eight = 1 << 7
 };
@@ -70,7 +69,8 @@ namespace enum_flags {
 
 // this redefinition enables bitwise operator usage
 template<>
-struct EnableBitmaskOperators<TestFlags> {
+struct EnableBitmaskOperators<TestFlags>
+{
     static constexpr bool value = true;
 };
 
@@ -84,30 +84,28 @@ constexpr bool EnableBitmaskOperators<TestFlags>::value;
 namespace {
 
 // test enumeration without bitwise operators
-enum struct TestEnum : unsigned char
-{
-    None  = 0,
-    One   = 1 << 0,
-    Two   = 1 << 1,
+enum struct TestEnum : unsigned char {
+    None = 0,
+    One = 1 << 0,
+    Two = 1 << 1,
     Three = 1 << 2,
-    Four  = 1 << 3,
-    Five  = 1 << 4,
-    Six   = 1 << 5,
+    Four = 1 << 3,
+    Five = 1 << 4,
+    Six = 1 << 5,
     Seven = 1 << 6,
     Eight = 1 << 7
 };
 
 namespace dummy1 {
 // test enumeration without bitwise operators
-enum struct TestNamespacedEnum : unsigned char
-{
-    None  = 0,
-    One   = 1 << 0,
-    Two   = 1 << 1,
+enum struct TestNamespacedEnum : unsigned char {
+    None = 0,
+    One = 1 << 0,
+    Two = 1 << 1,
     Three = 1 << 2,
-    Four  = 1 << 3,
-    Five  = 1 << 4,
-    Six   = 1 << 5,
+    Four = 1 << 3,
+    Five = 1 << 4,
+    Six = 1 << 5,
     Seven = 1 << 6,
     Eight = 1 << 7
 };
@@ -120,7 +118,8 @@ namespace enum_flags {
 
 // this redefinition enables bitwise operator usage
 template<>
-struct EnableBitmaskOperators<dummy1::TestNamespacedEnum> {
+struct EnableBitmaskOperators<dummy1::TestNamespacedEnum>
+{
     static constexpr bool value = true;
 };
 
@@ -132,113 +131,122 @@ constexpr bool EnableBitmaskOperators<dummy1::TestNamespacedEnum>::value;
 }  // namespace lumik
 
 
-
 namespace {
 
 // Tests availability of enable_bitmask_operators functions.
-TEST(enum_flags, enable_bitmask_operators) {
-  EXPECT_EQ(true, lumik::enum_flags::EnableBitmaskOperators<TestFlags>::value);
-  EXPECT_EQ(false, lumik::enum_flags::EnableBitmaskOperators<TestEnum>::value);
-  EXPECT_EQ(true, lumik::enum_flags::EnableBitmaskOperators<dummy1::TestNamespacedEnum>::value);
+TEST(enum_flags, enable_bitmask_operators)
+{
+    EXPECT_EQ(true, lumik::enum_flags::EnableBitmaskOperators<TestFlags>::value);
+    EXPECT_EQ(false, lumik::enum_flags::EnableBitmaskOperators<TestEnum>::value);
+    EXPECT_EQ(true, lumik::enum_flags::EnableBitmaskOperators<dummy1::TestNamespacedEnum>::value);
 }
 
 // Test operators in namespace
 namespace dummy2 {
-TEST(enum_flags, namespace) {
-  dummy1::TestNamespacedEnum a, b, c;
-  a = dummy1::TestNamespacedEnum::One;
-  b = dummy1::TestNamespacedEnum::Two;
-  c = a | b;
-  EXPECT_EQ(3, static_cast<int>(c));
+TEST(enum_flags, namespace)
+{
+    dummy1::TestNamespacedEnum a, b, c;
+    a = dummy1::TestNamespacedEnum::One;
+    b = dummy1::TestNamespacedEnum::Two;
+    c = a | b;
+    EXPECT_EQ(3, static_cast<int>(c));
 }
 }  // namespace dummy2
 
 
 // Tests | bitwise operator.
-TEST(enum_flags, OR) {
-  TestFlags a, b, c;
-  a = TestFlags::One;
-  b = TestFlags::Two;
-  c = a | b;
-  EXPECT_EQ(3, static_cast<int>(c));
+TEST(enum_flags, OR)
+{
+    TestFlags a, b, c;
+    a = TestFlags::One;
+    b = TestFlags::Two;
+    c = a | b;
+    EXPECT_EQ(3, static_cast<int>(c));
 }
 
 
 // Tests & bitwise operator.
-TEST(enum_flags, AND) {
-  TestFlags a, b, c;
-  a = TestFlags::One;
-  b = TestFlags::Two;
-  c = a & b;
-  EXPECT_EQ(0, static_cast<int>(c));
-  a = TestFlags::Two;
-  c = a & b;
-  EXPECT_EQ(2, static_cast<int>(c));
+TEST(enum_flags, AND)
+{
+    TestFlags a, b, c;
+    a = TestFlags::One;
+    b = TestFlags::Two;
+    c = a & b;
+    EXPECT_EQ(0, static_cast<int>(c));
+    a = TestFlags::Two;
+    c = a & b;
+    EXPECT_EQ(2, static_cast<int>(c));
 }
 
 
 // Tests ^ bitwise operator.
-TEST(enum_flags, XOR) {
-  TestFlags a, b, c;
-  a = TestFlags::One;
-  b = TestFlags::Two;
-  c = a ^ b;
-  EXPECT_EQ(3, static_cast<int>(c));
-  a = TestFlags::Two;
-  c = a ^ b;
-  EXPECT_EQ(0, static_cast<int>(c));
+TEST(enum_flags, XOR)
+{
+    TestFlags a, b, c;
+    a = TestFlags::One;
+    b = TestFlags::Two;
+    c = a ^ b;
+    EXPECT_EQ(3, static_cast<int>(c));
+    a = TestFlags::Two;
+    c = a ^ b;
+    EXPECT_EQ(0, static_cast<int>(c));
 }
 
 
 // Tests ~ bitwise operator.
-TEST(enum_flags, NOT) {
-  TestFlags a;
-  a = TestFlags::One;
-  EXPECT_EQ(254, static_cast<int>(~a));
+TEST(enum_flags, NOT)
+{
+    TestFlags a;
+    a = TestFlags::One;
+    EXPECT_EQ(254, static_cast<int>(~a));
 }
 
 
 // Tests |= bitwise operator.
-TEST(enum_flags, OR_assignment) {
-  TestFlags a, b;
-  a = TestFlags::One;
-  b = TestFlags::Two;
-  b |= a;
-  EXPECT_EQ(3, static_cast<int>(b));
+TEST(enum_flags, OR_assignment)
+{
+    TestFlags a, b;
+    a = TestFlags::One;
+    b = TestFlags::Two;
+    b |= a;
+    EXPECT_EQ(3, static_cast<int>(b));
 }
 
 
 // Tests &= bitwise operator.
-TEST(enum_flags, AND_assignment) {
-  TestFlags a, b;
-  a = TestFlags::One;
-  b = TestFlags::Two;
-  b &= a;
-  EXPECT_EQ(0, static_cast<int>(b));
-  a = TestFlags::Two;
-  b = TestFlags::Two;
-  b &= a;
-  EXPECT_EQ(2, static_cast<int>(b));
+TEST(enum_flags, AND_assignment)
+{
+    TestFlags a, b;
+    a = TestFlags::One;
+    b = TestFlags::Two;
+    b &= a;
+    EXPECT_EQ(0, static_cast<int>(b));
+    a = TestFlags::Two;
+    b = TestFlags::Two;
+    b &= a;
+    EXPECT_EQ(2, static_cast<int>(b));
 }
 
 
 // Tests ^= bitwise operator.
-TEST(enum_flags, XOR_assignment) {
-  TestFlags a, b;
-  a = TestFlags::One;
-  b = TestFlags::Two;
-  b ^= a;
-  EXPECT_EQ(3, static_cast<int>(b));
-  a = TestFlags::Two;
-  b = TestFlags::Two;
-  b ^= a;
-  EXPECT_EQ(0, static_cast<int>(b));
+TEST(enum_flags, XOR_assignment)
+{
+    TestFlags a, b;
+    a = TestFlags::One;
+    b = TestFlags::Two;
+    b ^= a;
+    EXPECT_EQ(3, static_cast<int>(b));
+    a = TestFlags::Two;
+    b = TestFlags::Two;
+    b ^= a;
+    EXPECT_EQ(0, static_cast<int>(b));
 }
 
 }  // namespace
 
 
-int main(int argc, char** argv) {
-  testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
+int main(int argc, char** argv)
+{
+    testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }
