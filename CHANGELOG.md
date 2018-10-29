@@ -10,13 +10,25 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+
+### Changed
+
+
+### Fixed
+
+
+### Removed
+
+
+## [Version 3.1.1 *(2018-10-29)*](https://github.com/lumik/enum_flags/compare/v3.1.0...v3.1.1)
+
+
+### Added
+
 - Style guide submodule.
 - Added option to export cmake target as system header include.
 - Added option to run sanitized tests.
 - Added clang-format and clang-tidy tests.
-
-
-### Changed
 
 
 ### Fixed
@@ -27,6 +39,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
 ### Removed
+
+- Removed cpplint test.
 
 
 ## [Version 3.1.0 *(2018-10-10)*](https://github.com/lumik/enum_flags/compare/v3.0.0...v3.1.0)
