@@ -78,8 +78,8 @@ namespace enum_flags {
  *
  * enum struct TestFlags : unsigned char
  * {
- *     One   = 1 << 0,
- *     Two   = 1 << 1,
+ *     One   = 1u << 0u,
+ *     Two   = 1u << 1u,
  * };
  *
  * }  // namespace my_namespace
@@ -135,7 +135,7 @@ template<typename E>
 inline constexpr typename std::enable_if<lumik::enum_flags::EnableBitmaskOperators<E>::value, E>::type operator|(
     E a, E b)
 {
-    typedef typename std::underlying_type<E>::type underlying;
+    using underlying = typename std::underlying_type<E>::type;
     return static_cast<E>(static_cast<underlying>(a) | static_cast<underlying>(b));
 }
 
@@ -151,7 +151,7 @@ template<typename E>
 inline constexpr typename std::enable_if<lumik::enum_flags::EnableBitmaskOperators<E>::value, E>::type operator&(
     E a, E b)
 {
-    typedef typename std::underlying_type<E>::type underlying;
+    using underlying = typename std::underlying_type<E>::type;
     return static_cast<E>(static_cast<underlying>(a) & static_cast<underlying>(b));
 }
 
@@ -167,7 +167,7 @@ template<typename E>
 inline constexpr typename std::enable_if<lumik::enum_flags::EnableBitmaskOperators<E>::value, E>::type operator^(
     E a, E b)
 {
-    typedef typename std::underlying_type<E>::type underlying;
+    using underlying = typename std::underlying_type<E>::type;
     return static_cast<E>(static_cast<underlying>(a) ^ static_cast<underlying>(b));
 }
 
@@ -181,7 +181,7 @@ inline constexpr typename std::enable_if<lumik::enum_flags::EnableBitmaskOperato
 template<typename E>
 inline typename std::enable_if<lumik::enum_flags::EnableBitmaskOperators<E>::value, E>::type operator~(E a)
 {
-    typedef typename std::underlying_type<E>::type underlying;
+    using underlying = typename std::underlying_type<E>::type;
     return static_cast<E>(~static_cast<underlying>(a));
 }
 
@@ -196,7 +196,7 @@ inline typename std::enable_if<lumik::enum_flags::EnableBitmaskOperators<E>::val
 template<typename E>
 inline typename std::enable_if<lumik::enum_flags::EnableBitmaskOperators<E>::value, E&>::type operator|=(E& a, E b)
 {
-    typedef typename std::underlying_type<E>::type underlying;
+    using underlying = typename std::underlying_type<E>::type;
     a = static_cast<E>(static_cast<underlying>(a) | static_cast<underlying>(b));
     return a;
 }
@@ -212,7 +212,7 @@ inline typename std::enable_if<lumik::enum_flags::EnableBitmaskOperators<E>::val
 template<typename E>
 inline typename std::enable_if<lumik::enum_flags::EnableBitmaskOperators<E>::value, E&>::type operator&=(E& a, E b)
 {
-    typedef typename std::underlying_type<E>::type underlying;
+    using underlying = typename std::underlying_type<E>::type;
     a = static_cast<E>(static_cast<underlying>(a) & static_cast<underlying>(b));
     return a;
 }
@@ -228,7 +228,7 @@ inline typename std::enable_if<lumik::enum_flags::EnableBitmaskOperators<E>::val
 template<typename E>
 typename std::enable_if<lumik::enum_flags::EnableBitmaskOperators<E>::value, E&>::type operator^=(E& a, E b)
 {
-    typedef typename std::underlying_type<E>::type underlying;
+    using underlying = typename std::underlying_type<E>::type;
     a = static_cast<E>(static_cast<underlying>(a) ^ static_cast<underlying>(b));
     return a;
 }

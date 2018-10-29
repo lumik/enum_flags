@@ -8,7 +8,7 @@ matrix:
   include:
    - compiler: gcc
    - compiler: clang
-     env: CCCOMPILER=/usr/bin/clang-7 CXXCOMPILER=/usr/bin/clang++-7 CLANG_FORMAT=1
+     env: CCCOMPILER=/usr/bin/clang-7 CXXCOMPILER=/usr/bin/clang++-7 CLANG_FORMAT=1 CLANG_TIDY="-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
    - compiler: clang
      env: CCCOMPILER=/usr/bin/clang-7 CXXCOMPILER=/usr/bin/clang++-7 COVERAGE=1 LLVM_PROFILE_BINARY=/usr/bin/llvm-profdata-7 LLVM_COV_BINARY=/usr/bin/llvm-cov-7
    - compiler: clang
@@ -137,7 +137,7 @@ script:
       echo "normal cmake:" &&
       echo "cmake .. -DCMAKE_BUILD_TYPE=Release -DENUM_FLAGS_MAKE_TESTS=ON" &&
       docker exec -t ci bash -c "cd /home/travis/build/$TRAVIS_REPO_SLUG/build && CC=${CC} CXX=${CXX}
-        cmake .. -DCMAKE_BUILD_TYPE=Release -DENUM_FLAGS_MAKE_TESTS=ON";
+        cmake .. -DCMAKE_BUILD_TYPE=Release -DENUM_FLAGS_MAKE_TESTS=ON ${CLANG_TIDY}";
     fi
   # build the project
   - docker exec -t ci bash -c "cd /home/travis/build/$TRAVIS_REPO_SLUG/build && cmake --build ."
@@ -150,6 +150,9 @@ script:
   # run tests
   - if [[ ! -z "${CLANG_FORMAT}" ]]; then
       docker exec -t ci bash -c "cd /home/travis/build/$TRAVIS_REPO_SLUG && clang-format-7 -i \$(find src/lumik/enum_flags tests -name *.h -o -name *.cpp -o -name *.tpp | tr \"\\n\" \" \") && git diff --exit-code || (echo \"Code was not formatted using clang-format!\"; false)";
+    fi
+  - if [[ ! -z "${CLANG_TIDY}" ]]; then
+      docker exec -t ci bash -c "cd /home/travis/build/$TRAVIS_REPO_SLUG && run-clang-tidy-7 -p build -header-filter=.*/enum_flags/.*";
     fi
 
 after_success:

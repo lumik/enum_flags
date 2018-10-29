@@ -87,8 +87,8 @@ namespace my_namespace {
 
 enum struct TestFlags : unsigned char
 {
-    One   = 1 << 0,
-    Two   = 1 << 1,
+    One   = 1u << 0u,
+    Two   = 1u << 1u,
 };
 
 }  // namespace my_namespace

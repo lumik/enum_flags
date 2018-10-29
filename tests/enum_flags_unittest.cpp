@@ -51,15 +51,15 @@ namespace {
 
 // test enumeration
 enum struct TestFlags : unsigned char {
-    None = 0,
-    One = 1 << 0,
-    Two = 1 << 1,
-    Three = 1 << 2,
-    Four = 1 << 3,
-    Five = 1 << 4,
-    Six = 1 << 5,
-    Seven = 1 << 6,
-    Eight = 1 << 7
+    None = 0u,
+    One = 1u << 0u,
+    Two = 1u << 1u,
+    Three = 1u << 2u,
+    Four = 1u << 3u,
+    Five = 1u << 4u,
+    Six = 1u << 5u,
+    Seven = 1u << 6u,
+    Eight = 1u << 7u
 };
 
 }  // namespace
@@ -85,29 +85,29 @@ namespace {
 
 // test enumeration without bitwise operators
 enum struct TestEnum : unsigned char {
-    None = 0,
-    One = 1 << 0,
-    Two = 1 << 1,
-    Three = 1 << 2,
-    Four = 1 << 3,
-    Five = 1 << 4,
-    Six = 1 << 5,
-    Seven = 1 << 6,
-    Eight = 1 << 7
+    None = 0u,
+    One = 1u << 0u,
+    Two = 1u << 1u,
+    Three = 1u << 2u,
+    Four = 1u << 3u,
+    Five = 1u << 4u,
+    Six = 1u << 5u,
+    Seven = 1u << 6u,
+    Eight = 1u << 7u
 };
 
 namespace dummy1 {
 // test enumeration without bitwise operators
 enum struct TestNamespacedEnum : unsigned char {
-    None = 0,
-    One = 1 << 0,
-    Two = 1 << 1,
-    Three = 1 << 2,
-    Four = 1 << 3,
-    Five = 1 << 4,
-    Six = 1 << 5,
-    Seven = 1 << 6,
-    Eight = 1 << 7
+    None = 0u,
+    One = 1u << 0u,
+    Two = 1u << 1u,
+    Three = 1u << 2u,
+    Four = 1u << 3u,
+    Five = 1u << 4u,
+    Six = 1u << 5u,
+    Seven = 1u << 6u,
+    Eight = 1u << 7u
 };
 }  // namespace dummy1
 
@@ -134,112 +134,124 @@ constexpr bool EnableBitmaskOperators<dummy1::TestNamespacedEnum>::value;
 namespace {
 
 // Tests availability of enable_bitmask_operators functions.
+// NOLINTNEXTLINE(cppcoreguidelines-owning-memory,cert-err58-cpp,cppcoreguidelines-special-member-functions,modernize-use-equals-delete)
 TEST(enum_flags, enable_bitmask_operators)
 {
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-vararg)
     EXPECT_EQ(true, lumik::enum_flags::EnableBitmaskOperators<TestFlags>::value);
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-vararg)
     EXPECT_EQ(false, lumik::enum_flags::EnableBitmaskOperators<TestEnum>::value);
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-vararg)
     EXPECT_EQ(true, lumik::enum_flags::EnableBitmaskOperators<dummy1::TestNamespacedEnum>::value);
 }
 
 // Test operators in namespace
 namespace dummy2 {
+// NOLINTNEXTLINE(cppcoreguidelines-owning-memory,cert-err58-cpp,cppcoreguidelines-special-member-functions,modernize-use-equals-delete)
 TEST(enum_flags, namespace)
 {
     dummy1::TestNamespacedEnum a, b, c;
     a = dummy1::TestNamespacedEnum::One;
     b = dummy1::TestNamespacedEnum::Two;
     c = a | b;
-    EXPECT_EQ(3, static_cast<int>(c));
+    EXPECT_EQ(3, static_cast<int>(c));  // NOLINT(cppcoreguidelines-pro-type-vararg)
 }
 }  // namespace dummy2
 
 
 // Tests | bitwise operator.
+// NOLINTNEXTLINE(cppcoreguidelines-owning-memory,cert-err58-cpp,cppcoreguidelines-special-member-functions,modernize-use-equals-delete)
 TEST(enum_flags, OR)
 {
     TestFlags a, b, c;
     a = TestFlags::One;
     b = TestFlags::Two;
     c = a | b;
-    EXPECT_EQ(3, static_cast<int>(c));
+    EXPECT_EQ(3, static_cast<int>(c));  // NOLINT(cppcoreguidelines-pro-type-vararg)
 }
 
 
 // Tests & bitwise operator.
+// NOLINTNEXTLINE(cppcoreguidelines-owning-memory,cert-err58-cpp,cppcoreguidelines-special-member-functions,modernize-use-equals-delete)
 TEST(enum_flags, AND)
 {
     TestFlags a, b, c;
     a = TestFlags::One;
     b = TestFlags::Two;
     c = a & b;
-    EXPECT_EQ(0, static_cast<int>(c));
+    EXPECT_EQ(0, static_cast<int>(c));  // NOLINT(cppcoreguidelines-pro-type-vararg)
     a = TestFlags::Two;
     c = a & b;
-    EXPECT_EQ(2, static_cast<int>(c));
+    EXPECT_EQ(2, static_cast<int>(c));  // NOLINT(cppcoreguidelines-pro-type-vararg)
 }
 
 
 // Tests ^ bitwise operator.
+// NOLINTNEXTLINE(cppcoreguidelines-owning-memory,cert-err58-cpp,cppcoreguidelines-special-member-functions,modernize-use-equals-delete)
 TEST(enum_flags, XOR)
 {
     TestFlags a, b, c;
     a = TestFlags::One;
     b = TestFlags::Two;
     c = a ^ b;
-    EXPECT_EQ(3, static_cast<int>(c));
+    EXPECT_EQ(3, static_cast<int>(c));  // NOLINT(cppcoreguidelines-pro-type-vararg)
     a = TestFlags::Two;
     c = a ^ b;
-    EXPECT_EQ(0, static_cast<int>(c));
+    EXPECT_EQ(0, static_cast<int>(c));  // NOLINT(cppcoreguidelines-pro-type-vararg)
 }
 
 
 // Tests ~ bitwise operator.
+// NOLINTNEXTLINE(cppcoreguidelines-owning-memory,cert-err58-cpp,cppcoreguidelines-special-member-functions,modernize-use-equals-delete)
 TEST(enum_flags, NOT)
 {
     TestFlags a;
     a = TestFlags::One;
-    EXPECT_EQ(254, static_cast<int>(~a));
+    EXPECT_EQ(254, static_cast<int>(~a));  // NOLINT(cppcoreguidelines-pro-type-vararg)
 }
 
 
 // Tests |= bitwise operator.
+// NOLINTNEXTLINE(cppcoreguidelines-owning-memory,cert-err58-cpp,cppcoreguidelines-special-member-functions,modernize-use-equals-delete)
 TEST(enum_flags, OR_assignment)
 {
     TestFlags a, b;
     a = TestFlags::One;
     b = TestFlags::Two;
     b |= a;
-    EXPECT_EQ(3, static_cast<int>(b));
+    EXPECT_EQ(3, static_cast<int>(b));  // NOLINT(cppcoreguidelines-pro-type-vararg)
 }
 
 
 // Tests &= bitwise operator.
+// NOLINTNEXTLINE(cppcoreguidelines-owning-memory,cert-err58-cpp,cppcoreguidelines-special-member-functions,modernize-use-equals-delete)
 TEST(enum_flags, AND_assignment)
 {
     TestFlags a, b;
     a = TestFlags::One;
     b = TestFlags::Two;
     b &= a;
-    EXPECT_EQ(0, static_cast<int>(b));
+    EXPECT_EQ(0, static_cast<int>(b));  // NOLINT(cppcoreguidelines-pro-type-vararg)
     a = TestFlags::Two;
     b = TestFlags::Two;
     b &= a;
-    EXPECT_EQ(2, static_cast<int>(b));
+    EXPECT_EQ(2, static_cast<int>(b));  // NOLINT(cppcoreguidelines-pro-type-vararg)
 }
 
 
 // Tests ^= bitwise operator.
+// NOLINTNEXTLINE(cppcoreguidelines-owning-memory,cert-err58-cpp,cppcoreguidelines-special-member-functions,modernize-use-equals-delete)
 TEST(enum_flags, XOR_assignment)
 {
     TestFlags a, b;
     a = TestFlags::One;
     b = TestFlags::Two;
     b ^= a;
-    EXPECT_EQ(3, static_cast<int>(b));
+    EXPECT_EQ(3, static_cast<int>(b));  // NOLINT(cppcoreguidelines-pro-type-vararg)
     a = TestFlags::Two;
     b = TestFlags::Two;
     b ^= a;
-    EXPECT_EQ(0, static_cast<int>(b));
+    EXPECT_EQ(0, static_cast<int>(b));  // NOLINT(cppcoreguidelines-pro-type-vararg)
 }
 
 }  // namespace
