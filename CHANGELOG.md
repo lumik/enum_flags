@@ -16,13 +16,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
-- Fixed style guide title.
-
 
 ### Removed
 
 
-## [Version 3.1.1 *(2018-10-29)*](https://github.com/lumik/enum_flags/compare/v3.1.0...v3.1.1)
+## [Version 3.1.1 *(2018-10-30)*](https://github.com/lumik/enum_flags/compare/v3.1.0...v3.1.1)
 
 
 ### Added
@@ -38,6 +36,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Corrected documentation.
 - Changed test file header.
 - Cleaned up Cmakelists.
+- Fixed style guide title.
 
 
 ### Removed
